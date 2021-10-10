@@ -295,7 +295,6 @@ tarefa pretoext{
 tarefa verde{
 
 	se(cor(2)=="VERDE" ou cor(2)=="CIANO" ou cor(1)=="VERDE" ou cor(1)=="CIANO" e tempo()-timer4>200)entao{
-		escrever(1,virartexto(tempo()-timer4))
 		enquanto(cor(3)!="VERDE" e cor(3)!="CIANO" e cor(4)!="VERDE" e cor(4)!="CIANO" e luz(4)>sensibilidade+5 e luz(1)>sensibilidade+5)farei{
 			seguidordelinha()
 		}
@@ -312,7 +311,6 @@ tarefa verde{
 	}
 
 	senao se(cor(3)=="VERDE" ou cor(3)=="CIANO" ou cor(4)=="VERDE" ou cor(4)=="CIANO" e tempo()-timer4>200)entao{
-		escrever(1,virartexto(tempo()-timer4))
 		enquanto(cor(2)!="VERDE" e cor(2)!="CIANO" e cor(1)!="VERDE" e cor(1)!="CIANO" e luz(1)>=sensibilidade e luz(4)>sensibilidade+5)farei{
 			seguidordelinha()
 		}
@@ -329,9 +327,6 @@ tarefa verde{
 	}
 }
 tarefa gap{
-
-	escrever(1,virartexto(90*(direcao()/90-arredondar(direcao()/90))))
-	escrever(2,virartexto(tempo()-timer))
 	se(((modulo(90*(direcao()/90-arredondar(direcao()/90)))>15 e tempo()-timer>900) ou (modulo(90*(direcao()/90-arredondar(direcao()/90)))>8 e tempo()-timer>1600)) e !frento)entao{
 		direction3=90*(direcao()/90-arredondar(direcao()/90))
 		se(direction3>0)entao{
@@ -413,8 +408,6 @@ tarefa despejar{
 	farei{
 		frente(300)
 		enquanto(luz(5)<50)farei{}
-
-		escrever(1,"DEIXANDO KIT")
 		girarbaixo(200)
 		baixar(1000)
 		frente(300)
@@ -515,9 +508,6 @@ tarefa dimensaoeabertura{
 			}
 		}
 	}
-
-	escrever(2,dimensao)
-	escrever(3,entrei)
 }
 tarefa idtriangulo{
 
@@ -555,7 +545,6 @@ tarefa idtriangulo{
         frente(300)
         farei{
 			se(qqw)entao{
-				escrever(4,"verdadeiro")
             	se(modulo(ultra(num4)-dist2)>9)entao{
                 	teste(giros){
                     	caso 1:
@@ -568,15 +557,12 @@ tarefa idtriangulo{
                    }
 					qqw=falso
                }
-            }senao{
-				escrever(4,"falso")
-			}
+            }
             se(ultra(num4)<360)entao{
                 se(ultra(num4)>dist1 ou porra)entao{
                     dist1=ultra(num4)
                     porra=falso
                 }
-				escrever(3,virartexto(modulo(dist1-ultra(num4))))
                 se(modulo(dist1-ultra(num4))>9)entao{
                     dist2=ultra(num4)
                     qqw=verdadeiro
@@ -584,7 +570,6 @@ tarefa idtriangulo{
                     dist1=ultra(num4)
 				}
             }
-			escrever(5,virartexto(dist2))
 			
         }enquanto(cor(5)=="BRANCO" e ultra(1)>paredecm e cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE"  e cor(4)!="CIANO")
 
@@ -630,7 +615,6 @@ tarefa trocalado{
        		}senao{qqw=verdadeiro}
        	}
 	}
-	escrever(3,virartexto(contadorconta))
 
 	se((giros==1 e entrei!="meiodireita" e entrei!="meio" e entrei!="meioesquerda") ou (giros==0))entao{
         rotacionar(500,num2)
@@ -693,7 +677,7 @@ tarefa iravitima{
 	}senao{
 		tras(100)
 	}
-	esperar(68)
+	esperar(85)
 	parar()
 	timer2=tempo()-timer
 	escrever(1,virartexto(timer2))
@@ -784,7 +768,6 @@ tarefa acharsaida{
 				farei{
 					prata()
 				}enquanto(fita2 e cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE" e cor(4)!="CIANO")
-				escrever(1,"fita")
 				se(!fita2)entao{
 					trasrotacao(300,10)
 					rotacionar(500,90)
