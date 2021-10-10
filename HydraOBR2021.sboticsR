@@ -127,6 +127,7 @@ tarefa alinhamento2{
 	farei{
 		direction4=45*(direcao()/45-arredondar(direcao()/45))
 	}enquanto(modulo(direction4)/direction4==modulo(direction3)/direction3)
+	parar()
 }
 tarefa obstaculo1{
 
