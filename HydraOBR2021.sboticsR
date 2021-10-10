@@ -617,6 +617,8 @@ tarefa trocalado{
 		contadorconta=3
 	}
 
+	escrever(3,concatenar("quant. vitima:", virartexto(contadorconta)))
+
 	se((giros==1 e entrei!="meiodireita" e entrei!="meio" e entrei!="meioesquerda") ou (giros==0))entao{
         rotacionar(500,num2)
         alinhamento2()
