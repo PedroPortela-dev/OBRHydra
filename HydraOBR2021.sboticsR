@@ -62,12 +62,8 @@ tarefa velocidade{
 	}senao{
 		inclinac=inclinacao()
 	}
-	derivada=ultinclinacao-inclinac
-	se(derivada>0)entao{
-		forca=180-derivada+kd
-	}senao{
-		forca=180+derivada*kd
-	}
+	derivada=ultinclinacao-inclinac	
+	forca=180-modulo(derivada*kd)
 
 	se(tempo()>timer2+20)entao{
 		ultinclinacao=inclinac
@@ -218,7 +214,7 @@ tarefa kitresgate{
 	se(cor(5) != "CIANO")entao{
 		timer6 = tempo()
 	}
-	se(tempo()-timer6>=300)entao{
+	se(tempo()-timer6>=250)entao{
 		tras(200)
 		esperar(500)
 		pegarkit()
@@ -673,11 +669,11 @@ tarefa idvitima{
 tarefa iravitima{
 	timer=tempo()
 	se(irfrente)entao{
-		frente(100)
+		frente(300)
 	}senao{
-		tras(100)
+		tras(300)
 	}
-	esperar(85)
+	esperar(51)
 	parar()
 	timer2=tempo()-timer
 	escrever(1,virartexto(timer2))
@@ -718,7 +714,7 @@ tarefa vitpreto{
 	esperar(timer2)
 	rotacionar(500,num5)
 	alinhamento2()
-	frente(100)
+	frente(300)
 	esperar(49)
 	tras(300)
 	enquanto(modulo(ultra(num1)-dist2)<9)farei{}
