@@ -613,6 +613,10 @@ tarefa trocalado{
        	}
 	}
 
+	se(contadorconta>3)entao{
+		contadorconta=3
+	}
+
 	se((giros==1 e entrei!="meiodireita" e entrei!="meio" e entrei!="meioesquerda") ou (giros==0))entao{
         rotacionar(500,num2)
         alinhamento2()
