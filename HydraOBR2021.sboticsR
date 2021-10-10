@@ -753,7 +753,7 @@ tarefa acharsaida{
 			trasrotacao(300,10)
 			rotacionar(500,45)
 			alinhamento2()
-			frente(300,20)
+			frenterotacao(300,20)
 			rotacionar(500,negativo(90))
 			alinhamento2()
 			frente(300)
