@@ -654,7 +654,7 @@ tarefa idvitima{
 	irfrente=falso
 		tras(300)
 		farei{
-			se(ultra(num1)<360)entao{
+			se(ultra(num1)<330)entao{
 				se(porra)entao{
                     dist1=ultra(num1)
                     porra=falso
