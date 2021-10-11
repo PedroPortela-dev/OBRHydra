@@ -551,10 +551,7 @@ tarefa idtriangulo{
                     dist1=ultra(num4)
                     porra=falso
                 }
-                se(dist1-ultra(num4)>6)entao{
-					se(!qqw)entao{
-						esperar(1)
-					}
+                se(modulo(dist1-ultra(num4))>6)entao{
                     dist2=ultra(num4)
                     qqw=verdadeiro
 				}senao{
@@ -739,8 +736,11 @@ tarefa vitpreto{
 	alinhamento2()
 	frente(300)
 	esperar(51)
+	escrever(1,virartexto(dist2))
+	escrever(2,virartexto(ultra(num1)))
+	escrever(3,virartexto(ultra(num1)-dist2))
 	tras(300)
-	enquanto(modulo(ultra(num1)-dist2)<9)farei{}
+	enquanto(modulo(ultra(num1)-dist2)<7)farei{}
 }
 tarefa acharsaida{
 	rotacionar(500,45)
