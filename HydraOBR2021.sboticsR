@@ -48,7 +48,9 @@ numero giros=1
 numero paredecm=40
 numero dist1=0
 numero dist2=0
+numero dist3=0
 numero contar=0
+numero contar2=0
 numero num1=0
 numero num2=0
 numero num3=0
@@ -519,6 +521,19 @@ tarefa idtriangulo{
 
     ciclo=verdadeiro
     farei{
+		se(dimensao=="3x4")entao{
+			se(arredondar(giros/2)-giros/2==0)entao{
+				dist3=250
+			}senao{
+				dist3=350
+			}
+		}senao{
+			se(arredondar(giros/2)-giros/2==0)entao{
+				dist3=350
+			}senao{
+				dist3=250
+			}
+		}
 
         porra=verdadeiro
         qqw=falso
@@ -536,7 +551,7 @@ tarefa idtriangulo{
 					qqw=falso
                }
             }
-            se(ultra(num4)<340)entao{
+            se(ultra(num4)<dist3)entao{
                 se(porra)entao{
                     dist1=ultra(num4)
                     porra=falso
@@ -546,10 +561,6 @@ tarefa idtriangulo{
                     qqw=verdadeiro
 				}senao{
                     dist1=ultra(num4)
-				}
-				se(dist1>teste3)entao{
-					teste3=dist1
-					escrever(1,virartexto(teste3))
 				}
 				se(qqw)entao{
 					se(modulo(ultra(num4)-dist2)>teste2)entao{
