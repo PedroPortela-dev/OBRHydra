@@ -398,30 +398,6 @@ tarefa direiti2{
     num4=negativo(90)
 	num5=90
 }
-tarefa despejar{
-
-	rotacionar(500,num3)
-	alinhamento2()
-	farei{
-		frente(300)
-		enquanto(luz(5)<50)farei{}
-		girarbaixo(200)
-		baixar(1000)
-		frente(300)
-		esperar(1000)
-		levantar(1000)
-		girarcima(200)
-		tras(100)
-		esperar(300)
-	}enquanto(temvitima())
-	direction1=direcao()
-	se(contar!=contadorconta)entao{
-		rotacionar(500,num2)
-		alinhamento()
-	}senao{
-		rotacionar(500,45)
-	}
-}
 tarefa dimensaoeabertura{
 
 	alinhamento()
@@ -585,6 +561,30 @@ tarefa idtriangulo{
             ciclo=falso
         }
     }enquanto(ciclo)
+}
+tarefa despejar{
+
+	rotacionar(500,num3)
+	alinhamento2()
+	farei{
+		frente(300)
+		enquanto(luz(5)<50)farei{}
+		girarbaixo(200)
+		baixar(1000)
+		frente(300)
+		esperar(1000)
+		levantar(1000)
+		girarcima(200)
+		tras(100)
+		esperar(300)
+	}enquanto(temvitima())
+	direction1=direcao()
+	se(contar!=contadorconta)entao{
+		rotacionar(500,num2)
+		alinhamento()
+	}senao{
+		rotacionar(500,45)
+	}
 }
 tarefa trocalado{
 	se(dimensao=="3x4")entao{
