@@ -556,7 +556,7 @@ tarefa idtriangulo{
                     dist1=ultra(num4)
                     porra=falso
                 }
-                se(dist1-ultra(num4)>3)entao{
+                se(dist1-ultra(num4)>6)entao{
                     dist2=ultra(num4)
                     qqw=verdadeiro
 				}senao{
