@@ -544,16 +544,12 @@ tarefa idtriangulo{
                 }
                 se(dist1-ultra(num4)>9)entao{
                     dist2=ultra(num4)
-					se(modulo(ultra(num4)-dist2)>teste2)entao{
-						teste2=modulo(ultra(num4)-dist2)
-					}
-					escrever(3,virartexto(teste2))
                     qqw=verdadeiro
-                }senao{
+				}senao{
                     dist1=ultra(num4)
 				}
+				escrever(3,virartexto(dist1-ultra(num4)))
             }
-			
         }enquanto(cor(5)=="BRANCO" e ultra(1)>paredecm-5 e cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE"  e cor(4)!="CIANO")
 
         se(cor(1)=="VERDE" ou cor(1)=="CIANO" ou cor(4)=="VERDE" ou cor(4)=="CIANO")entao{
