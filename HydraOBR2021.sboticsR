@@ -521,6 +521,7 @@ tarefa idtriangulo{
 
         porra=verdadeiro
         qqw=falso
+		teste1=0
         frente(300)
         farei{
 			se(qqw)entao{
