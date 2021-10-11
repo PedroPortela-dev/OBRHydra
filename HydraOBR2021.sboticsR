@@ -544,7 +544,7 @@ tarefa idtriangulo{
 				}
             }
 			
-        }enquanto(cor(5)=="BRANCO" e ultra(1)>paredecm e cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE"  e cor(4)!="CIANO")
+        }enquanto(cor(5)=="BRANCO" e ultra(1)>paredecm-5 e cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE"  e cor(4)!="CIANO")
 
         se(cor(1)=="VERDE" ou cor(1)=="CIANO" ou cor(4)=="VERDE" ou cor(4)=="CIANO")entao{
             trasrotacao(300,15)
@@ -552,7 +552,7 @@ tarefa idtriangulo{
             alinhamento()
             giros=giros+1
         }
-        senao se(ultra(1)<=paredecm)entao{
+        senao se(ultra(1)<=paredecm-5)entao{
             rotacionar(500,num1)
             alinhamento()
             giros=giros+1
@@ -680,10 +680,9 @@ tarefa iravitima{
 	}senao{
 		tras(300)
 	}
-	esperar(51)
+	esperar(99)
 	parar()
 	timer2=tempo()-timer
-	escrever(1,virartexto(timer2))
 	rotacionar(500, num4)
 	alinhamento2()
 	timer=tempo()
@@ -722,7 +721,7 @@ tarefa vitpreto{
 	rotacionar(500,num5)
 	alinhamento2()
 	frente(300)
-	esperar(49)
+	esperar(51)
 	tras(300)
 	enquanto(modulo(ultra(num1)-dist2)<9)farei{}
 }
