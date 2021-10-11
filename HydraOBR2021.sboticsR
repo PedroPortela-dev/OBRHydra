@@ -556,21 +556,20 @@ tarefa idtriangulo{
                     dist1=ultra(num4)
                     porra=falso
                 }
-                se(dist1-ultra(num4)>10000)entao{
+                se(dist1-ultra(num4)>3)entao{
                     dist2=ultra(num4)
                     qqw=verdadeiro
 				}senao{
                     dist1=ultra(num4)
 				}
 				se(qqw)entao{
+					escrever(3,"verdadeiro")
 					se(modulo(ultra(num4)-dist2)>teste2)entao{
 						teste2=modulo(ultra(num4)-dist2)
 						escrever(2,virartexto(teste2))
 					}
-				}
-				se(dist1-ultra(num4)>teste1)entao{
-					teste1=dist1-ultra(num4)
-					escrever(3,virartexto(teste1))
+				}senao{
+					escrever(3,"falso")
 				}
             }
         }enquanto(cor(5)=="BRANCO" e ultra(1)>paredecm-5 e cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE"  e cor(4)!="CIANO")
