@@ -54,6 +54,12 @@ numero num2=0
 numero num3=0
 numero num4=0
 numero num5=0
+numero teste1=0
+numero teste2=0
+numero teste3=0
+numero teste4=0
+numero teste5=0
+numero teste6=0
 
 tarefa velocidade{
 
@@ -531,6 +537,10 @@ tarefa idtriangulo{
 					qqw=falso
                }
             }
+			se(ultra(num4)>teste1)entao{
+				teste1=ultra(num4)
+			}
+			escrever(3,virartexto(teste1))
             se(ultra(num4)<360)entao{
                 se(ultra(num4)>dist1 ou porra)entao{
                     dist1=ultra(num4)
