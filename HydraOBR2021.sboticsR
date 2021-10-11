@@ -540,7 +540,7 @@ tarefa idtriangulo{
         frente(300)
         farei{
 			se(qqw)entao{
-            	se(modulo(ultra(num4)-dist2)>6)entao{
+            	se(modulo(ultra(num4)-dist2)>7)entao{
                 	teste(giros){
                     	caso 1:
                            	contador1=contador1+1 
@@ -549,7 +549,7 @@ tarefa idtriangulo{
                        outros :
                    }
 					qqw=falso
-               }
+               	}
             }
             se(ultra(num4)<dist3)entao{
                 se(porra)entao{
@@ -563,13 +563,12 @@ tarefa idtriangulo{
                     dist1=ultra(num4)
 				}
 				se(qqw)entao{
-					escrever(3,"verdadeiro")
-					se(modulo(ultra(num4)-dist2)>teste2)entao{
-						teste2=modulo(ultra(num4)-dist2)
-						escrever(2,virartexto(teste2))
+					se(modulo(ultra(num4)-dist2)>teste3)entao{
+						teste3=modulo(ultra(num4)-dist2)
+						escrever(1,virartexto(dist2))
+						escrever(2,virartexto(ultra(num4)))
+						escrever(3,virartexto(teste3))
 					}
-				}senao{
-					escrever(3,"falso")
 				}
             }
         }enquanto(cor(5)=="BRANCO" e ultra(1)>paredecm-5 e cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE"  e cor(4)!="CIANO")
