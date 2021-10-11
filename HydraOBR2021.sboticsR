@@ -54,6 +54,7 @@ numero num2=0
 numero num3=0
 numero num4=0
 numero num5=0
+
 numero teste1=0
 numero teste2=0
 numero teste3=0
@@ -538,7 +539,6 @@ tarefa idtriangulo{
             se(ultra(num4)<340)entao{
                 se(porra)entao{
                     dist1=ultra(num4)
-					escrever(1,virartexto(dist1))
                     porra=falso
                 }
                 se(dist1-ultra(num4)>10000)entao{
@@ -547,12 +547,20 @@ tarefa idtriangulo{
 				}senao{
                     dist1=ultra(num4)
 				}
+				se(dist1>teste3)entao{
+					teste3=dist1
+					escrever(1,virartexto(teste3))
+				}
+				se(qqw)entao{
+					se(modulo(ultra(num4)-dist2)>teste2)entao{
+						teste2=modulo(ultra(num4)-dist2)
+						escrever(2,virartexto(teste2))
+					}
+				}
 				se(dist1-ultra(num4)>teste1)entao{
 					teste1=dist1-ultra(num4)
-					escrever(2,virartexto(ultra(num4)))
 					escrever(3,virartexto(teste1))
 				}
-				
             }
         }enquanto(cor(5)=="BRANCO" e ultra(1)>paredecm-5 e cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE"  e cor(4)!="CIANO")
 
