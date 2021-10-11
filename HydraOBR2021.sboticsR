@@ -524,7 +524,7 @@ tarefa idtriangulo{
         frente(300)
         farei{
 			se(qqw)entao{
-            	se(modulo(ultra(num4)-dist2)>9)entao{
+            	se(modulo(ultra(num4)-dist2)>6)entao{
                 	teste(giros){
                     	caso 1:
                            	contador1=contador1+1 
@@ -542,7 +542,7 @@ tarefa idtriangulo{
                     dist1=ultra(num4)
                     porra=falso
                 }
-                se(modulo(dist1-ultra(num4))>9)entao{
+                se(dist1-ultra(num4)>9)entao{
                     dist2=ultra(num4)
 					se(modulo(ultra(num4)-dist2)>teste2)entao{
 						teste2=modulo(ultra(num4)-dist2)
