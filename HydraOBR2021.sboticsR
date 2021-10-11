@@ -521,7 +521,6 @@ tarefa idtriangulo{
 
         porra=verdadeiro
         qqw=falso
-		teste1=0
         frente(300)
         farei{
 			se(qqw)entao{
@@ -541,20 +540,22 @@ tarefa idtriangulo{
                     dist1=ultra(num4)
                     porra=falso
                 }
-                se(dist1-ultra(num4)>10000)entao{
+                se(dist1-ultra(num4)>2)entao{
                     dist2=ultra(num4)
                     qqw=verdadeiro
 				}senao{
                     dist1=ultra(num4)
 				}
+				escrever(1,virartexto(dist1))
+				escrever(2,virartexto(ultra(num4)))
 				se(dist1-ultra(num4)>teste1)entao{
 					teste1=dist1-ultra(num4)
-					escrever(1,virartexto(dist1))
-					escrever(2,virartexto(ultra(num4)))
 					escrever(3,virartexto(teste1))
 				}
 				
-            }
+            }senao{
+				enquanto()
+			}
         }enquanto(cor(5)=="BRANCO" e ultra(1)>paredecm-5 e cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE"  e cor(4)!="CIANO")
 
         se(cor(1)=="VERDE" ou cor(1)=="CIANO" ou cor(4)=="VERDE" ou cor(4)=="CIANO")entao{
