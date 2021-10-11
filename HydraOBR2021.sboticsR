@@ -548,7 +548,10 @@ tarefa idtriangulo{
 				}senao{
                     dist1=ultra(num4)
 				}
-				escrever(3,virartexto(dist1-ultra(num4)))
+				se(dist1-ultra(num4)>teste1)entao{
+					teste1=dist1-ultra(num4)
+				}
+				escrever(3,virartexto(teste1))
             }
         }enquanto(cor(5)=="BRANCO" e ultra(1)>paredecm-5 e cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE"  e cor(4)!="CIANO")
 
