@@ -57,13 +57,6 @@ numero num3=0
 numero num4=0
 numero num5=0
 
-numero teste1=0
-numero teste2=0
-numero teste3=0
-numero teste4=0
-numero teste5=0
-numero teste6=0
-
 tarefa velocidade{
 
 	se(inclinacao()<270)entao{
