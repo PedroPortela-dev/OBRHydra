@@ -945,7 +945,7 @@ tarefa salaresgate{
 		farei{
 			idvitima()
 			iravitima()
-			se(cor(5)=="BRANCO" ou contar==contadorconta-1)entao{
+			se((cor(5)=="BRANCO" e temperatura()>25) ou contar==contadorconta-1)entao{
 				pegarvitima()
 				irtriangulo()
 
