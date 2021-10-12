@@ -1,7 +1,3 @@
-numero redfita=44
-numero greenfita=47
-numero bluefita=54
-
 texto dimensao = "a"
 texto entrei = "a"
 booleano irfrente=verdadeiro
@@ -12,9 +8,7 @@ booleano frento=verdadeiro
 booleano ciclo=verdadeiro
 booleano ciclo2=verdadeiro
 booleano fita2 = verdadeiro
-booleano kit = verdadeiro
 booleano virvermelho=verdadeiro
-booleano ramon=verdadeiro
 booleano abertura=falso
 booleano porra=verdadeiro
 booleano qqw=verdadeiro
@@ -25,8 +19,6 @@ numero direction1 = 0
 numero direction2 = 0
 numero direction3 = 0
 numero direction4 = 0
-numero direction5 = 0
-numero direction6 = 0
 numero timer = 0
 numero timer2 = 0
 numero timer3 = 0
@@ -36,7 +28,6 @@ numero timer6 = 0
 numero timer7 = 0
 numero timer8 = 0
 numero dirExt = 0
-numero esqExt = 0
 numero frontal = 0
 numero forca=150
 numero aAtuador=0
@@ -57,7 +48,6 @@ numero num2=0
 numero num3=0
 numero num4=0
 numero num5=0
-numero teste1=0
 
 tarefa velocidade{
 
@@ -552,7 +542,7 @@ tarefa idtriangulo{
         frente(300)
         farei{
 			se(qqw)entao{
-            	se(modulo(ultra(num4)-dist2)>10)entao{
+            	se(modulo(ultra(num4)-dist2)>3)entao{
 					qqw=falso
                	}senao{
 					dist2=ultra(num4)
@@ -585,13 +575,9 @@ tarefa idtriangulo{
 								escrever(2,virartexto(contador2))
                     		outros :
                    		}
+						qqw=verdadeiro
 					}
                     dist2=ultra(num4)
-                    qqw=verdadeiro
-					se(modulo(ultra(num4)-dist2)>teste1)entao{
-						teste1=modulo(ultra(num4)-dist2)
-						escrever(3,virartexto(teste1))
-					}
 				}senao{
 					dist1=ultra(num4)
 				}
@@ -704,26 +690,27 @@ tarefa idvitima{
 	porra=verdadeiro
 	qqw=verdadeiro
 	irfrente=falso
-		tras(300)
-		farei{
-			se(ultra(num1)<330)entao{
-				se(porra)entao{
-                    dist1=ultra(num1)
-                    porra=falso
-				}
-				se(ultra(num1)-dist1>6)entao{
-					dist2=ultra(num1)
-					qqw=falso
-					irfrente=verdadeiro
-				}
-				senao se(dist1-ultra(num1)>6)entao{
-                    dist2=ultra(num1)
-                    qqw=falso
-                }senao{
-                    dist1=ultra(num1)
-                }
+	tras(300)
+	farei{
+		se(ultra(num1)<330)entao{
+			se(porra e verpreto)entao{
+ 	            dist1=ultra(num1)
+                porra=falso
+			}
+			se(ultra(num1)-dist1>6)entao{
+				dist2=ultra(num1)
+				qqw=falso
+				irfrente=verdadeiro
+			}
+			senao se(dist1-ultra(num1)>6)entao{
+               	dist2=ultra(num1)
+                qqw=falso
+            }senao{
+                dist1=ultra(num1)
             }
-		}enquanto(qqw)
+        }
+	}enquanto(qqw)
+	verpreto=verdadeiro
 }
 tarefa iravitima{
 	timer=tempo()
@@ -773,11 +760,11 @@ tarefa vitpreto{
 	alinhamento2()
 	frente(300)
 	esperar(51)
-	escrever(1,virartexto(dist2))
-	escrever(2,virartexto(ultra(num1)))
-	escrever(3,virartexto(ultra(num1)-dist2))
 	tras(300)
-	enquanto(modulo(ultra(num1)-dist2)<7)farei{}
+	enquanto(modulo(ultra(num1)-dist2)<3)farei{
+		dist2=ultra(num1)
+	}
+	verpreto=falso
 }
 tarefa acharsaida{
 	rotacionar(500,45)
