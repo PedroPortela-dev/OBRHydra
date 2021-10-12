@@ -726,6 +726,7 @@ tarefa idvitima{
     }
 	se(ultra(num6)>teste1)entao{
 		teste1=ultra(num6)
+		escrever(3,virartexto(teste1))
 	}
 	escrever(2,virartexto(dist3))
 	tras(300)
