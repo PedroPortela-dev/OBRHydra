@@ -786,11 +786,8 @@ tarefa vitpreto{
 	esperar(51)
 	tras(300)
 	dist2=ultra(num1)
-	farei{
-		se(modulo(ultra(num1)-dist2)<3)entao{
-			dist2=ultra(num1)
-		}
-	}enquanto(modulo(ultra(num1)-dist2)<3)
+	enquanto(modulo(ultra(num1)-dist2)<7)farei{
+	}
 }
 tarefa acharsaida{
 	rotacionar(500,45)
