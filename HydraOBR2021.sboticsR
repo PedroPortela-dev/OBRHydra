@@ -28,7 +28,6 @@ numero timer7 = 0
 numero timer8 = 0
 numero dirExt = 0
 numero frontal = 0
-numero irfrente=0
 numero forca=150
 numero aAtuador=0
 numero sensibilidade=35
@@ -666,7 +665,8 @@ tarefa trocalado{
 	se((giros==1 e entrei!="meiodireita" e entrei!="meio" e entrei!="meioesquerda") ou (giros==0))entao{
         rotacionar(500,num2)
         alinhamento2()
-        frenterotacao(300,10)
+        frente(300)
+		enquanto(ultra(1)>70)farei{}
         rotacionar(500,num3)
 		alinhamento2()
     }
@@ -725,47 +725,26 @@ tarefa idvitima{
             }
         }
     }
-	se(ultra(num6)>teste1)entao{
-		teste1=ultra(num6)
-		escrever(3,virartexto(teste1))
-	}
-	escrever(2,virartexto(dist3))
 	tras(300)
 	farei{
-		se(ultra(num1)<330)entao{
+		se(ultra(num1)<dist3)entao{
 			se(porra)entao{
  	            dist1=ultra(num1)
                 porra=falso
 			}
-			se(ultra(num1)-dist1>6)entao{
-				escrever(3,virartexto(dist1))
-				irfrente=2
-                qqw=falso
-			}
 			se(dist1-ultra(num1)>6)entao{
-				irfrente=0
                 qqw=falso
             }senao{
                 dist1=ultra(num1)
             }
+			escrever(2,virartexto(dist1))
         }
 	}enquanto(qqw)
-	escrever(1,virartexto(irfrente))
 }
 tarefa iravitima{
-	timer=tempo()
-	teste(irfrente){
-		caso 2:
-			frente(300)
-			esperar(99)
-			parar()
-		outros :
-			tras(300)
-			esperar(99)
-			parar()
-	}
-	
-	timer2=tempo()-timer
+	tras(300)
+	esperar(101)
+	parar()
 	rotacionar(500, num4)
 	alinhamento2()
 	timer=tempo()
@@ -784,7 +763,7 @@ tarefa pegarvitima{
 	baixar(1000)
 	timer5=tempo()
 	frente(300)
-	esperar(517)
+	esperar(550)
 	parar()
 	timer6=tempo()-timer5
 	levantar(1000)
@@ -807,9 +786,11 @@ tarefa vitpreto{
 	esperar(51)
 	tras(300)
 	dist2=ultra(num1)
-	enquanto(modulo(ultra(num1)-dist2)<3)farei{
-		dist2=ultra(num1)
-	}
+	farei{
+		se(modulo(ultra(num1)-dist2)<3)entao{
+			dist2=ultra(num1)
+		}
+	}enquanto(modulo(ultra(num1)-dist2)<3)
 }
 tarefa acharsaida{
 	rotacionar(500,45)
@@ -938,8 +919,7 @@ tarefa salaresgate{
 		farei{
 			idvitima()
 			iravitima()
-			se((cor(5)=="BRANCO" e temperatura()>25) ou contar==contadorconta-1)entao{
-				escrever(3,virartexto(temperatura()))
+			se(cor(5)=="BRANCO" ou contar==contadorconta-1)entao{
 				pegarvitima()
 				irtriangulo()
 
