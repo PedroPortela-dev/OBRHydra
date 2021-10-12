@@ -111,8 +111,6 @@ tarefa seguidordelinha{
 	}
 }
 tarefa alinhamento{
-	hbvwiueirsvuhnifsndhiubhmoit
-	bjtnoljorjhniojhy
 	direction3=90*(direcao()/90-arredondar(direcao()/90))
 	se(direction3>0)entao{
 		esquerda(1000)
