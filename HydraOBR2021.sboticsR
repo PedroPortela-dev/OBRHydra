@@ -552,10 +552,10 @@ tarefa idtriangulo{
         frente(300)
         farei{
 			se(qqw)entao{
-            	se(modulo(ultra(num4)-dist2)>7)entao{
+            	se(modulo(ultra(num4)-dist2)>10)entao{
 					qqw=falso
                	}senao{
-					dist2=modulo(ultra(num4)-dist2)
+					dist2=ultra(num4)
 				}
             }
             se(ultra(num4)<dist3)entao{
@@ -590,7 +590,7 @@ tarefa idtriangulo{
                     qqw=verdadeiro
 					se(modulo(ultra(num4)-dist2)>teste1)entao{
 						teste1=modulo(ultra(num4)-dist2)
-						escrever(3,virartexto(teste1))
+						escrever(3,virartexto(dist2))
 					}
 				}senao{
 					dist1=ultra(num4)
