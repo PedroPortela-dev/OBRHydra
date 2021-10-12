@@ -57,6 +57,7 @@ numero num2=0
 numero num3=0
 numero num4=0
 numero num5=0
+numero teste1=0
 
 tarefa velocidade{
 
@@ -551,14 +552,14 @@ tarefa idtriangulo{
         frente(300)
         farei{
 			se(qqw)entao{
-				se(modulo(ultra(num4))-dist2>teste1)entao{
-					teste1=modulo(ultra(num4))-dist2
+				se(modulo(ultra(num4)-dist2)>teste1)entao{
+					teste1=modulo(ultra(num4)-dist2)
 					escrever(3,virartexto(teste1))
 				}
             	se(modulo(ultra(num4)-dist2)>7)entao{
 					qqw=falso
                	}senao{
-					dist2=modulo(ultra(num4))-dist2
+					dist2=modulo(ultra(num4)-dist2)
 				}
             }
             se(ultra(num4)<dist3)entao{
