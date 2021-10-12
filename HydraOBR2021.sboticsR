@@ -48,6 +48,7 @@ numero num2=0
 numero num3=0
 numero num4=0
 numero num5=0
+numero num6=0
 
 tarefa velocidade{
 
@@ -387,6 +388,7 @@ tarefa esquerdi1{
     num3=negativo(45)
     num4=2
 	num5=negativo(135)
+    num6=3
 }
 tarefa direiti1{
 	num1=negativo(90)
@@ -394,6 +396,7 @@ tarefa direiti1{
     num3=45
     num4=3
 	num5=135
+    num6=2
 }
 tarefa esquerdi2{
 	num1=2
@@ -401,6 +404,7 @@ tarefa esquerdi2{
     num3=negativo(45)
     num4=90
 	num5=negativo(90)
+    num6=3
 }
 tarefa direiti2{
 	num1=3
@@ -408,6 +412,7 @@ tarefa direiti2{
     num3=45
     num4=negativo(90)
 	num5=90
+    num6=2
 }
 tarefa dimensaoeabertura{
 
@@ -689,7 +694,20 @@ tarefa trocalado{
 tarefa idvitima{
 	porra=verdadeiro
 	qqw=verdadeiro
-	irfrente=falso
+	se(dimensao="3x4")entao{
+        se(arredondar(giros/2)-giros/2==0)entao{
+            dist3=270-ultra(num6)
+        }senao{
+            dist3=370-ultra(num6)
+        }
+    }senao{
+        se(arredondar(giros/2)-giros/2!=0)entao{
+            dist3=270-ultra(num6)
+        }senao{
+            dist3=370-ultra(num6)
+        }
+    }
+	escrever(2,virartexto(dist3))
 	tras(300)
 	farei{
 		se(ultra(num1)<330)entao{
