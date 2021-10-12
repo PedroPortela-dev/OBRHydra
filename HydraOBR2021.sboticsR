@@ -1,6 +1,5 @@
 texto dimensao = "a"
 texto entrei = "a"
-booleano irfrente=verdadeiro
 booleano sala1=verdadeiro
 booleano direito=verdadeiro
 booleano esquerdo=verdadeiro
@@ -29,6 +28,7 @@ numero timer7 = 0
 numero timer8 = 0
 numero dirExt = 0
 numero frontal = 0
+numero irfrente=0
 numero forca=150
 numero aAtuador=0
 numero sensibilidade=35
@@ -698,26 +698,37 @@ tarefa idvitima{
                 porra=falso
 			}
 			se(ultra(num1)-dist1>6)entao{
-				dist2=ultra(num1)
-				qqw=falso
-				irfrente=verdadeiro
+				irfrente=2
+				dist2=dist1
+                qqw=falso
 			}
 			senao se(dist1-ultra(num1)>6)entao{
+				irfrente=0
+				se(!verpreto)entao{
+					irfrente=1
+				}
                	dist2=ultra(num1)
                 qqw=falso
             }senao{
                 dist1=ultra(num1)
             }
+			verpreto=verdadeiro
         }
 	}enquanto(qqw)
-	verpreto=verdadeiro
+	escrever(1,virartexto(irfrente))
 }
 tarefa iravitima{
 	timer=tempo()
-	se(!irfrente)entao{
-		tras(300)
-		esperar(99)
-		parar()
+	teste(irfrente){
+		caso 1:
+		caso 2:
+			frente(300)
+			esperar(99)
+			parar()
+		outros :
+			tras(300)
+			esperar(99)
+			parar()
 	}
 	
 	timer2=tempo()-timer
