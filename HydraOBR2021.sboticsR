@@ -8,6 +8,7 @@ booleano ciclo=verdadeiro
 booleano ciclo2=verdadeiro
 booleano fita2 = verdadeiro
 booleano virvermelho=verdadeiro
+booleano verpreto=verdadeiro
 booleano abertura=falso
 booleano porra=verdadeiro
 booleano qqw=verdadeiro
@@ -674,6 +675,7 @@ tarefa trocalado{
 	despejar()
 
     se(qqw)entao{
+		giros=giros+1
     	rotacionar(500, num2)
     	alinhamento2()
         frenterotacao(300,15)
@@ -696,7 +698,7 @@ tarefa idvitima{
 	porra=verdadeiro
 	qqw=verdadeiro
 	se(ultra(num6)<70)entao{
-        se(dimensao="3x4")entao{
+        se(dimensao=="3x4")entao{
             se(arredondar(giros/2)-giros/2==0)entao{
                 dist3=265-ultra(num6)
             }senao{
@@ -710,7 +712,7 @@ tarefa idvitima{
             }
         }
     }senao{
-        se(dimensao="3x4")entao{
+        se(dimensao=="3x4")entao{
             se(arredondar(giros/2)-giros/2==0)entao{
                 dist3=265
             }senao{
