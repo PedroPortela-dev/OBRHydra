@@ -590,7 +590,7 @@ tarefa idtriangulo{
                     qqw=verdadeiro
 					se(modulo(ultra(num4)-dist2)>teste1)entao{
 						teste1=modulo(ultra(num4)-dist2)
-						escrever(3,virartexto(dist2))
+						escrever(3,virartexto(teste1))
 					}
 				}senao{
 					dist1=ultra(num4)
