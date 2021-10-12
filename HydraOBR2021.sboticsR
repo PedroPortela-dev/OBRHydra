@@ -8,7 +8,6 @@ booleano ciclo=verdadeiro
 booleano ciclo2=verdadeiro
 booleano fita2 = verdadeiro
 booleano virvermelho=verdadeiro
-booleano verpreto=verdadeiro
 booleano abertura=falso
 booleano porra=verdadeiro
 booleano qqw=verdadeiro
@@ -734,7 +733,7 @@ tarefa idvitima{
 	tras(300)
 	farei{
 		se(ultra(num1)<330)entao{
-			se(porra e verpreto)entao{
+			se(porra)entao{
  	            dist1=ultra(num1)
                 porra=falso
 			}
@@ -743,17 +742,13 @@ tarefa idvitima{
 				dist2=dist1
                 qqw=falso
 			}
-			senao se(dist1-ultra(num1)>6)entao{
+			se(dist1-ultra(num1)>6)entao{
 				irfrente=0
-				se(!verpreto)entao{
-					irfrente=1
-				}
-               	dist2=ultra(num1)
+				dist2=ultra(num1)
                 qqw=falso
             }senao{
                 dist1=ultra(num1)
             }
-			verpreto=verdadeiro
         }
 	}enquanto(qqw)
 	escrever(1,virartexto(irfrente))
@@ -761,7 +756,6 @@ tarefa idvitima{
 tarefa iravitima{
 	timer=tempo()
 	teste(irfrente){
-		caso 1:
 		caso 2:
 			frente(300)
 			esperar(99)
@@ -816,7 +810,6 @@ tarefa vitpreto{
 	enquanto(modulo(ultra(num1)-dist2)<3)farei{
 		dist2=ultra(num1)
 	}
-	verpreto=falso
 }
 tarefa acharsaida{
 	rotacionar(500,45)
