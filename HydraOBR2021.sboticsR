@@ -290,12 +290,12 @@ tarefa pretoext{
 }
 tarefa verde{
 
-	se(cor(2)=="VERDE" ou cor(2)=="CIANO" ou cor(1)=="VERDE" ou cor(1)=="CIANO" e tempo()-timer4>200)entao{
+	se((cor(2)=="VERDE" ou cor(1)=="VERDE") e tempo()-timer4>200)entao{
 		escrever(1,"intercessão verde")
-		enquanto(cor(3)!="VERDE" e cor(3)!="CIANO" e cor(4)!="VERDE" e cor(4)!="CIANO" e luz(4)>sensibilidade+5 e luz(1)>sensibilidade+5)farei{
+		enquanto(cor(3)!="VERDE" e cor(4)!="VERDE" e luz(4)>sensibilidade+5 e luz(1)>sensibilidade+5)farei{
 			seguidordelinha()
 		}
-		se(cor(3)!="VERDE" e cor(3)!="CIANO" e cor(4)!="VERDE" e cor(4)!="CIANO")entao{
+		se(cor(3)!="VERDE" e cor(4)!="VERDE")entao{
 			frente(300)
 			enquanto(luz(1)<=sensibilidade+5)farei{}
 			frenterotacao(300,5)
@@ -307,12 +307,12 @@ tarefa verde{
 		frento=verdadeiro
 	}
 
-	senao se(cor(3)=="VERDE" ou cor(3)=="CIANO" ou cor(4)=="VERDE" ou cor(4)=="CIANO" e tempo()-timer4>200)entao{
+	senao se((cor(3)=="VERDE" ou cor(4)=="VERDE") e tempo()-timer4>200)entao{
 		escrever(1,"intercessão verde")
-		enquanto(cor(2)!="VERDE" e cor(2)!="CIANO" e cor(1)!="VERDE" e cor(1)!="CIANO" e luz(1)>=sensibilidade e luz(4)>sensibilidade+5)farei{
+		enquanto(cor(2)!="VERDE" e cor(1)!="VERDE" e luz(1)>=sensibilidade e luz(4)>sensibilidade+5)farei{
 			seguidordelinha()
 		}
-		se(cor(2)!="VERDE" e cor(2)!="CIANO" e cor(1)!="VERDE" e cor(1)!="CIANO")entao{
+		se(cor(2)!="VERDE" e cor(1)!="VERDE")entao{
 			frente(300)
 			enquanto(luz(4)<=sensibilidade+5)farei{}
 			frenterotacao(300,5)
@@ -738,13 +738,12 @@ tarefa idvitima{
                 porra=falso
 			}
 			se(ultra(num1)-dist1>6)entao{
+				escrever(3,virartexto(dist1))
 				irfrente=2
-				dist2=dist1
                 qqw=falso
 			}
 			se(dist1-ultra(num1)>6)entao{
 				irfrente=0
-				dist2=ultra(num1)
                 qqw=falso
             }senao{
                 dist1=ultra(num1)
@@ -807,6 +806,7 @@ tarefa vitpreto{
 	frente(300)
 	esperar(51)
 	tras(300)
+	dist2=ultra(num1)
 	enquanto(modulo(ultra(num1)-dist2)<3)farei{
 		dist2=ultra(num1)
 	}
@@ -939,6 +939,7 @@ tarefa salaresgate{
 			idvitima()
 			iravitima()
 			se((cor(5)=="BRANCO" e temperatura()>25) ou contar==contadorconta-1)entao{
+				escrever(3,virartexto(temperatura()))
 				pegarvitima()
 				irtriangulo()
 
