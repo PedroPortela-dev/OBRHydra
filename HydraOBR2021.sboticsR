@@ -11,6 +11,7 @@ booleano virvermelho=verdadeiro
 booleano abertura=falso
 booleano porra=verdadeiro
 booleano qqw=verdadeiro
+booleano irfrente=verdadeiro
 numero contador1 = 0
 numero contador2 = 0
 numero contadorconta = 0
@@ -202,8 +203,10 @@ tarefa pegarkit{
 	baixar(800)
 	velocidadeatuador(150)
 	girarbaixo(100)
+	abrir(100)
 	frente(200)
-	esperar(700)
+	esperar(600)
+	fechar(100)
 	levantar(800)
 	velocidadeatuador(150)
 }
@@ -211,7 +214,7 @@ tarefa kitresgate{
 	se(cor(5) != "CIANO")entao{
 		timer6 = tempo()
 	}
-	se(tempo()-timer6>=250)entao{
+	se(tempo()-timer6>=300)entao{
 		escrever(1,"kitresgate")
 		tras(200)
 		esperar(500)
@@ -573,11 +576,15 @@ tarefa idtriangulo{
 					se(!qqw)entao{
 						teste(giros){
                     		caso 1:
-                    	       	contador1=contador1+1
-								escrever(1,virartexto(contador1))
+									se(contador1<3)entao{
+                    	       		contador1=contador1+1
+									}
+									escrever(1,virartexto(contador1))
                     	   	caso 2:
-                    	    	contador2=contador2+1
-								escrever(2,virartexto(contador2))
+                    	    	se(contador2<3)entao{
+                    	       		contador2=contador2+1
+									}
+									escrever(2,virartexto(contador2))
                     		outros :
                    		}
 						qqw=verdadeiro
@@ -656,17 +663,17 @@ tarefa trocalado{
        	}
 	}
 
-	se(contadorconta>3)entao{
-		contadorconta=3
-	}
-
 	escrever(3,concatenar("quant. vitima:", virartexto(contadorconta)))
 
 	se((giros==1 e entrei!="meiodireita" e entrei!="meio" e entrei!="meioesquerda") ou (giros==0))entao{
         rotacionar(500,num2)
         alinhamento2()
-        frente(300)
-		enquanto(ultra(1)>70)farei{}
+		se(ultra(1)<132)entao{
+        	frente(300)
+			enquanto(ultra(1)>80)farei{}
+		}senao{
+			frenterotacao(300,10)
+		}
         rotacionar(500,num3)
 		alinhamento2()
     }
@@ -696,6 +703,7 @@ tarefa trocalado{
 tarefa idvitima{
 	porra=verdadeiro
 	qqw=verdadeiro
+	irfrente=verdadeiro
 	se(ultra(num6)<70)entao{
         se(dimensao=="3x4")entao{
             se(arredondar(giros/2)-giros/2==0)entao{
@@ -732,6 +740,10 @@ tarefa idvitima{
  	            dist1=ultra(num1)
                 porra=falso
 			}
+			se(ultra(num1)-dist1>6)entao{
+				qqw=falso
+				irfrente=falso
+			}
 			se(dist1-ultra(num1)>6)entao{
                 qqw=falso
             }senao{
@@ -742,7 +754,12 @@ tarefa idvitima{
 	}enquanto(qqw)
 }
 tarefa iravitima{
-	tras(300)
+	se(irfrente)entao{
+		tras(300)
+	}senao{
+		frente(300)
+		esperar(101)
+	}
 	esperar(101)
 	parar()
 	rotacionar(500, num4)
@@ -761,17 +778,23 @@ tarefa pegarvitima{
 	timer4=tempo()-timer3
 	velocidadeatuador(150)
 	baixar(1000)
+	abrir(100)
 	timer5=tempo()
 	frente(300)
-	esperar(550)
+	esperar(450)
+	fechar(100)
 	parar()
 	timer6=tempo()-timer5
 	levantar(1000)
+	alinhamento()
 }
 tarefa irtriangulo{
 	tras(300)
 	timer7=timer2+timer6-timer4
 	esperar(timer7+100)
+	se(toque(1))entao{
+		frenterotacao(300,10)
+	}
 	rotacionar(500,num5)
 	alinhamento2()
 	frente(300)
@@ -811,7 +834,7 @@ tarefa acharsaida{
 		}
 	}senao{
 		frente(300)
-		enquanto(ultra(1)>30)farei{}
+		enquanto(ultra(1)>35)farei{}
 	}
 	se(cor(1)!="VERDE" e cor(1)!="CIANO" e cor(4)!="VERDE" e cor(4)!="CIANO")entao{
 		rotacionar(500,45)	
