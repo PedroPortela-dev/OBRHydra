@@ -50,6 +50,36 @@ void setup() {
 //  BTserial.begin(9600);
 }
 
+void mover(int velD, int velE){
+  if(velD>0){
+    digitalWrite(md1, 0);
+    digitalWrite(md2, 1);
+    analogWrite(velmotorD,velD);
+  }else if(velD<0){
+    digitalWrite(md1, 1);
+    digitalWrite(md2, 0);
+    analogWrite(velmotorD,-velD);
+  }else{
+    digitalWrite(md1, 1);
+    digitalWrite(md2, 1);
+    analogWrite(velmotorD,0);
+  }
+  
+  if(velE>0){
+    digitalWrite(me1, 0);
+    digitalWrite(me2, 1);
+    analogWrite(velmotorE,velE);
+  }else if(velE<0){
+    digitalWrite(me1, 1);
+    digitalWrite(me2, 0);
+    analogWrite(velmotorE,-velE);
+  }else{
+    digitalWrite(me1, 1);
+    digitalWrite(me2, 1);
+    analogWrite(velmotorE,0);
+  }
+}
+
 void sentido(bool mdB, bool mdA, bool meB, bool meA){
   
   digitalWrite(md1,mdA);
@@ -68,75 +98,37 @@ void velocidade(int velD, int velE){
 void obstaculo(){
 
   //Tras
-  sentido(1,0,1,0);
-  velocidade(255,255);
+  mover(-255,-255);
   delay(500);
 
-  //Girando E
-  sentido(0,1,1,0);    
-  velocidade(255,255);
+  //Girando E    
+  mover(255,-255);
   delay(3100);
 
   //Frente
-  sentido(0,1,0,1);
-  velocidade(255,255);
+  mover(255,255);
   delay(1000);
   
   //Girando D
-  sentido(1,0,0,1); 
-  velocidade(255,255);
+  mover(-255,255);
   delay(3100);
 
   //Frente
-  sentido(0,1,0,1);
-  velocidade(255,255);
+  mover(255,255);
   delay(1500);
   
-  //Girando D
-  sentido(1,0,0,1); 
-  velocidade(255,255);
+  //Girando E
+  mover(255,-255);
   delay(3100);
 
   //Frente
-  sentido(0,1,0,1);
-  velocidade(255,255);
+  mover(255,255);
   delay(1000);
   
-  //Girando E
-  sentido(0,1,1,0);    
-  velocidade(255,255);
+  //Girando D    
+  mover(255,255);
   delay(3100);
   
-}
-
-void curvaDireita(){
-  i=0;
-  timeInicio=0;
-  curva90=false;
-  
-  sentido(0,1,0,1); // Frente
-  velocidade(120,120);
-  delay(100);
-  
-  sentido(1,0,0,1); 
-  velocidade(120,120);
-  while(digitalRead(sensDentroE) == 0){}
-  
-}
-
-void curvaEsquerda(){
-  
-  i=0;
-  timeInicio=0;
-  curva90=false;
-  
-  sentido(0,1,0,1); // Frente
-  velocidade(120,120);
-  delay(100);
-  
-  sentido(0,1,1,0);    
-  velocidade(120,120);
-  while(digitalRead(sensDentroD) == 0){} 
 }
 
 void loop() {
@@ -145,70 +137,56 @@ void loop() {
     time = millis();
 
     // Seguir Linha
-    if((digitalRead(sensForaD)==0 && digitalRead(sensForaE)==0 && digitalRead(sensDentroD)==0 && digitalRead(sensDentroE)==0) || (digitalRead(sensForaD)==1 && digitalRead(sensForaE)==1 && digitalRead(sensDentroD)==1 && digitalRead(sensDentroE)==1)){
+    if(digitalRead(sensForaD)==1 && digitalRead(sensForaE)==0){
       
-      sentido(0,1,0,1); // Frente
-      velocidade(150,150);   
-    
-    }
-    
-    else if(digitalRead(sensForaD)==1 && digitalRead(sensForaE)==0){
-      
-      sentido(0,1,0,1); // Frente
-      velocidade(120,120);
+      mover(120,120);
       delay(200);
-          
-      sentido(0,1,1,0); 
-      velocidade(120,120);
+
+      //Direita
+      mover(-120,120);
       while(digitalRead(sensDentroE) == 0){
         if(digitalRead(sensForaE)==1){
-          sentido(1,0,0,1); 
-          velocidade(120,120);
-          delay(100);
+          //Esquerda
+          mover(120,-120);
+          while(digitalRead(sensDentroD) == 0){};
           break;
         }
       }
       
     }
-    
     else if(digitalRead(sensForaE)==1 && digitalRead(sensForaD)==0){
       
-      sentido(0,1,0,1); // Frente
-      velocidade(120,120);
+      mover(120,120);
       delay(200);
-             
-      sentido(1,0,0,1); 
-      velocidade(120,120);
+
+      //Esquerda
+      mover(120,-120);
+      //testar continuidade
       while(digitalRead(sensDentroD) == 0){
         if(digitalRead(sensForaD)==1){
-          sentido(0,1,1,0); 
-          velocidade(120,120);
-          delay(100);
+          //Direita 
+          mover(-120,120);
+          while(digitalRead(sensDentroE) == 0){};
           break;
         }
       } 
       
     }
-    
     else if (digitalRead(sensDentroD)==0 && digitalRead(sensDentroE)==1){ 
-      
-      sentido(0,1,1,0);   
-      velocidade(120,120);
+      //Esquerda  
+      mover(120,-120);
       
     }
     
     else if(digitalRead(sensDentroD)==1 && digitalRead(sensDentroE)==0){
-      
-      sentido(1,0,0,1);
-      velocidade(120,120);
+      //direita
+      mover(-120,120);
     
     }
-    
-//    Serial.println(time);
-//    Serial.println(timeInicio);
-//    Serial.println(""); 
-    
-  }
+
+    else{      
+      velocidade(150,150);
+    }
   
 }
 
