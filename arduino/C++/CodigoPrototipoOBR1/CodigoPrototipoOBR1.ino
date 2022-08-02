@@ -1,8 +1,3 @@
-// Esse é a primeira atualização de Portela
-
-//#include <SoftwareSerial.h>
-//SoftwareSerial BTserial(10, 11); // RX | TX
-
 #define velmotorD 3
 #define md1 4
 #define md2 5
