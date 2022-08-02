@@ -1,42 +1,217 @@
-#define velmotorD 3
-#define md1 4
-#define md2 5
+//#include <SoftwareSerial.h>
+//SoftwareSerial BTserial(10, 11); // RX | TX
 
-#define velmotorE 11
-#define me1 12
-#define me2 13
-
-#define sensDentroD 6
 #define sensForaD 8
-#define sensDentroE 7
 #define sensForaE 2
-
 #define dist1 22
 
-#define tmp 700
+#define tmp 20
 
-bool seguirLinha = true, curva90 = false;
-int velD=0 , velE=0,i =0 ;
-unsigned long time, timeInicio, timeFim;
+bool seguirLinha = true;
+unsigned long timer;
+
+class Motor{
+  public:
+    Motor(int p1, int p2, int v, bool forward){
+      this->p1=p1;
+      this->p2=p2;
+      this->pv=v;
+      this->forward=forward;
+      pinMode(p1,OUTPUT);
+      pinMode(p2,OUTPUT);
+      pinMode(pv,OUTPUT);
+      digitalWrite(p1,LOW);
+      digitalWrite(p2,LOW);
+      digitalWrite(pv,0);
+    }
+    void frente(int v){
+      if(forward){
+        digitalWrite(p1,LOW);
+        digitalWrite(p2,HIGH);
+        analogWrite(pv,v);  
+      }else{
+        digitalWrite(p1,HIGH);
+        digitalWrite(p2,LOW);
+        analogWrite(pv,v);
+      }
+    }
+    void tras(int v){
+      if(forward){
+        digitalWrite(p1,HIGH);
+        digitalWrite(p2,LOW);
+        analogWrite(pv,v);
+      }else{
+        digitalWrite(p1,LOW);
+        digitalWrite(p2,HIGH);
+        analogWrite(pv,v);  
+      }
+    }
+    void parar(){
+      digitalWrite(p1,LOW);
+      digitalWrite(p2,LOW);
+      analogWrite(pv,0);
+    }
+    void freiar(){
+      digitalWrite(p1,HIGH);
+      digitalWrite(p2,HIGH);
+      analogWrite(pv,128);
+    }
+    void mover(int vel){
+      if(vel > 0){
+        frente(vel);
+      }
+      else if(vel < 0){
+        vel = -vel;
+        tras(vel);
+      }
+    }
+  private:
+    int p1,p2,pv;
+    bool forward;
+};
+
+class Driver{
+  public:
+    Driver(Motor *md, Motor *me){
+      this->mD=md;
+      this->mE=me;
+    }
+    void mover(int velD, int velE){
+      mD->mover(velD);
+      mE->mover(velE);
+    }
+    void frente(int vel){
+      mD->frente(vel);
+      mE->frente(vel);
+    }
+    void tras(int vel){
+      mD->tras(vel);
+      mE->tras(vel);
+    }
+    void direita(int vel){
+      mD->tras(vel);
+      mE->frente(vel);
+    }
+    void esquerda(int vel){
+      mD->frente(vel);
+      mE->tras(vel);
+    }
+    void parar(){
+      mD->parar();
+      mE->parar();
+    }
+  private:
+    Motor *mD;
+    Motor *mE;
+};
+
+Motor *md=new Motor(4, 5, 3,true);
+Motor *me=new Motor(12, 13, 11,true);
+Driver *drive = new Driver(md,me);
+
+class SensorCor{
+  public:
+    
+    SensorCor(int pinS2, int pinS3, int pinOut){
+      this->pinS2 = pinS2;
+      this->pinS3 = pinS3;
+      this->pinOut = pinOut;
+
+      pinMode(pinS2, OUTPUT);
+      pinMode(pinS3, OUTPUT);
+      pinMode(pinOut, INPUT);
+    }
+
+    void detectaCor() {
+      //Vermelho
+      digitalWrite(pinS2, LOW);
+      digitalWrite(pinS3, LOW);
+      valorVermelho = pulseIn(pinOut, !digitalRead(pinOut));
+      
+      //Sem filtro
+      digitalWrite(pinS2, HIGH);
+      valorBranco = pulseIn(pinOut, !digitalRead(pinOut));
+    
+      //Verde
+      digitalWrite(pinS2, HIGH);
+      valorVerde = pulseIn(pinOut, !digitalRead(pinOut));
+    }
+
+    String verificador()
+    {
+      //Detecta a cor
+      detectaCor();
+    
+      if(valorBranco <= 4){
+        Serial.println("Branco");
+        return "Branco";
+      }else
+      if(abs(valorVermelho-valorVerde) < 5){
+        Serial.println("Preto");
+        return "Preto";
+      }else
+      //Verifica se a cor vermelha foi detectada
+      if (valorVermelho < valorVerde) {
+        Serial.println("Vermelho");
+        return "Vermelho";
+      } else 
+      if (valorVerde < valorVermelho)  //Verifica se a cor verde foi detectada
+      {
+        Serial.println("Verde");
+        return "Verde";
+      }
+    }
+
+  private:
+    unsigned int valorVermelho = 0;
+    unsigned int valorVerde = 0;
+    unsigned int valorAzul = 0;
+    unsigned int valorBranco = 0;
+  
+    int pinS2, pinS3, pinOut;
+};
+
+SensorCor *sensorCorD = new SensorCor(6, 7, 8);
+SensorCor *sensorCorE = new SensorCor(9, 10, 11);
+
+void obstaculo(){
+
+  //Tras
+  drive->mover(-255,-255);
+  delay(500);
+
+  //Girando E    
+  drive->mover(255,-255);
+  delay(3100);
+
+  //Frente
+  drive->mover(255,255);
+  delay(1000);
+  
+  //Girando D
+  drive->mover(-255,255);
+  delay(3100);
+
+  //Frente
+  drive->mover(255,255);
+  delay(1500);
+  
+  //Girando E
+  drive->mover(255,-255);
+  delay(3100);
+
+  //Frente
+  drive->mover(255,255);
+  delay(1000);
+  
+  //Girando D    
+  drive->mover(255,255);
+  delay(3100);
+  
+}
 
 void setup() {
-  pinMode(velmotorD,OUTPUT);
-  pinMode(md1,OUTPUT);
-  pinMode(md2,OUTPUT);
-  digitalWrite(md1,LOW);
-  digitalWrite(md2,LOW);
-  analogWrite(velmotorD,velD);
-
-  pinMode(velmotorE,OUTPUT);
-  pinMode(me1,OUTPUT);
-  pinMode(me2,OUTPUT);
-  digitalWrite(me1,LOW);
-  digitalWrite(me2,LOW);
-  analogWrite(velmotorE,velE);
-
-  pinMode(sensDentroD,INPUT);
   pinMode(sensForaD,INPUT);
-  pinMode(sensDentroE,INPUT);
   pinMode(sensForaE,INPUT);
 
   pinMode(dist1, INPUT);
@@ -45,105 +220,27 @@ void setup() {
 //  BTserial.begin(9600);
 }
 
-void mover(int velD, int velE){
-  if(velD>0){
-    digitalWrite(md1, 0);
-    digitalWrite(md2, 1);
-    analogWrite(velmotorD,velD);
-  }else if(velD<0){
-    digitalWrite(md1, 1);
-    digitalWrite(md2, 0);
-    analogWrite(velmotorD,-velD);
-  }else{
-    digitalWrite(md1, 1);
-    digitalWrite(md2, 1);
-    analogWrite(velmotorD,0);
-  }
-  
-  if(velE>0){
-    digitalWrite(me1, 0);
-    digitalWrite(me2, 1);
-    analogWrite(velmotorE,velE);
-  }else if(velE<0){
-    digitalWrite(me1, 1);
-    digitalWrite(me2, 0);
-    analogWrite(velmotorE,-velE);
-  }else{
-    digitalWrite(me1, 1);
-    digitalWrite(me2, 1);
-    analogWrite(velmotorE,0);
-  }
-}
-
-void sentido(bool mdB, bool mdA, bool meB, bool meA){
-  
-  digitalWrite(md1,mdA);
-  digitalWrite(md2,mdB);
-  
-  digitalWrite(me1,meA);
-  digitalWrite(me2,meB);
- 
-}
-
-void velocidade(int velD, int velE){
-    analogWrite(velmotorD,velD);
-    analogWrite(velmotorE,velE); 
-}
-
-void obstaculo(){
-
-  //Tras
-  mover(-255,-255);
-  delay(500);
-
-  //Girando E    
-  mover(255,-255);
-  delay(3100);
-
-  //Frente
-  mover(255,255);
-  delay(1000);
-  
-  //Girando D
-  mover(-255,255);
-  delay(3100);
-
-  //Frente
-  mover(255,255);
-  delay(1500);
-  
-  //Girando E
-  mover(255,-255);
-  delay(3100);
-
-  //Frente
-  mover(255,255);
-  delay(1000);
-  
-  //Girando D    
-  mover(255,255);
-  delay(3100);
-  
-}
-
 void loop() {
   
   while(seguirLinha){
-    time = millis();
+
+    String corD = sensorCorD->verificador();
+    String corE = sensorCorD->verificador();
+    timer = millis();
 
     // Seguir Linha
     if(digitalRead(sensForaD)==1 && digitalRead(sensForaE)==0){
       
-      mover(120,120);
+      drive->mover(120,120);
       delay(200);
 
       //Direita
-      mover(-120,120);
-      while(digitalRead(sensDentroE) == 0){
+      drive->mover(-120,120);
+      while(corE == "Branco"){
         if(digitalRead(sensForaE)==1){
           //Esquerda
-          mover(120,-120);
-          while(digitalRead(sensDentroD) == 0){};
+          drive->mover(120,-120);
+          while(corD == "Branco"){};
           break;
         }
       }
@@ -151,114 +248,40 @@ void loop() {
     }
     else if(digitalRead(sensForaE)==1 && digitalRead(sensForaD)==0){
       
-      mover(120,120);
+      drive->mover(120,120);
       delay(200);
 
       //Esquerda
-      mover(120,-120);
+      drive->mover(120,-120);
       //testar continuidade
-      while(digitalRead(sensDentroD) == 0){
+      while(corD == "Branco"){
         if(digitalRead(sensForaD)==1){
           //Direita 
-          mover(-120,120);
-          while(digitalRead(sensDentroE) == 0){};
+          drive->mover(-120,120);
+          while(corE == "Branco"){};
           break;
         }
       }
       timer = millis();
     }
-    else if (digitalRead(sensDentroD)==0 && digitalRead(sensDentroE)==1){ 
+    else if (corD == "Branco" && corE == "PRETO"){ 
       //Esquerda  
-      mover(120,-120);
+      drive->mover(120,-120);
       
     }
     
-    else if(digitalRead(sensDentroD)==1 && digitalRead(sensDentroE)==0){
+    else if(corE == "Branco" && corD == "PRETO"){
       //direita
-      mover(-120,120);
+      drive->mover(-120,120);
     
     }
 
     else{      
-      velocidade(150,150);
+      drive->mover(150,150);
     }
 
-//    if(verde && millis()-timer>400){
+    if((corD == "Verde" || corE == "Verde") && millis()-timer>400){
 //      fazer o verde
-//    }
-  
+    }
+  }
 }
-
-/*
-  while(seguirLinha){
-    time = millis();
-
-    // Seguir Linha
-    if((digitalRead(sensForaD)==0 && digitalRead(sensForaE)==0 && digitalRead(sensDentroD)==0 && digitalRead(sensDentroE)==0) || (digitalRead(sensForaD)==1 && digitalRead(sensForaE)==1 && digitalRead(sensDentroD)==1 && digitalRead(sensDentroE)==1)){
-      sentido(0,1,0,1); // Frente
-      velocidade(150,150);   
-    }
-    
-    else if(digitalRead(sensForaD)==1 && digitalRead(sensForaE)==0){
-      //Tras      
-      sentido(1,0,1,0);
-      velocidade(120,120);
-      delay(150);
-      
-      sentido(0,1,1,0);     
-      velocidade(120,120);
-      delay(400); 
-       
-      i++;
-      if(millis() - timeInicio >= 300 && i >= 2 && curva90){
-        curvaDireita();
-      }
-      
-    }
-    
-    else if(digitalRead(sensForaE)==1 && digitalRead(sensForaD)==0){
-      //Tras
-      sentido(1,0,1,0);
-      velocidade(120,120);
-      delay(150);
-      
-      sentido(1,0,0,1);
-      velocidade(120,120);
-      delay(400);   
-      
-      i++;
-      if(time - timeInicio >= 300 && i >= 2 && curva90){
-        curvaEsquerda();
-      }
-    }else if (digitalRead(sensDentroD)==0 && digitalRead(sensDentroE)==1){ 
-      sentido(0,1,1,0);   
-      velocidade(120,120);
-    }else if(digitalRead(sensDentroD)==1 && digitalRead(sensDentroE)==0){
-      sentido(1,0,0,1);
-      velocidade(120,120);
-    }
-    
-    // Curva Longa
-    if(digitalRead(sensForaD) == 1 ^ digitalRead(sensForaE) == 1){
-      if(!curva90){
-        i=0;
-        timeInicio = time;
-        curva90 = true;
-      }
-    }
-    
-    if(curva90 &&  time - timeInicio >= 2000){
-        i=0;
-        timeInicio=0;
-        curva90=false;
-    }
-
-    
-    
-
-    // Obstaculo
-    if(digitalRead(dist1) == 0){
-      //obstaculo();
-    }
-    
-  */
