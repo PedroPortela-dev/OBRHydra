@@ -18,7 +18,7 @@ bool seguirLinha = true, curva90 = false;
 int velD=0 , velE=0,i =0 ;
 unsigned long time, timeInicio, timeFim;
 
-void setup() {
+void setup() {  
   pinMode(velmotorD,OUTPUT);
   pinMode(md1,OUTPUT);
   pinMode(md2,OUTPUT);
@@ -32,6 +32,8 @@ void setup() {
   digitalWrite(me1,LOW);
   digitalWrite(me2,LOW);
   analogWrite(velmotorE,velE);
+
+  // Falta S0 e S1 dos sensores de cor (Direira,Esquerda)
 
   pinMode(sensForaD,INPUT);
   pinMode(sensForaE,INPUT);
