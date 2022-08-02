@@ -283,5 +283,7 @@ void loop() {
     if((corD == "Verde" || corE == "Verde") && millis()-timer>400){
 //      fazer o verde
     }
+
+    delay(tmp);
   }
 }
