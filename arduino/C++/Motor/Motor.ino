@@ -1,11 +1,3 @@
-#define p1m1 2
-#define p2m1 4
-#define pvelm1 3
-
-#define p1m2 9
-#define p2m2 8
-#define pvelm2 10
-
 class Motor{
   public:
     Motor(int p1, int p2, int v, bool forward){
@@ -96,7 +88,30 @@ class Driver{
       mD->parar();
       mE->parar();
     }
+    void freiar(){
+      mD->freiar();
+      mE->freiar();      
+    }
   private:
     Motor *mD;
     Motor *mE;
 };
+
+Motor *md = new Motor(5,7,6, true);
+Motor *me = new Motor(3,4,2, false);
+Driver *drive = new Driver(md,me);
+
+void setup(){
+  Serial.begin(9600);
+}
+
+void loop(){
+  drive->frente(128);
+  delay(1000);
+  drive->freiar();
+  delay(1000);
+  drive->tras(128);
+  delay(1000);
+  drive->freiar();
+  delay(1000);
+}

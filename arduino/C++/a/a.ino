@@ -37,7 +37,7 @@ class SensorCor{
       //Detecta a cor
       detectaCor();
 
-      if(valorVermelho < 5){
+      if(valorVermelho <= 5){
         Serial.println("VERMELHO");
         return "Vermelho";
       }else if(valorBranco > 10){
@@ -87,12 +87,13 @@ void loop(){
   //corD->verificador();
   corE->verificador();
   
-//  Serial.print("VERMELHO: ");
-//  Serial.println(corD->valorVermelho);
+  Serial.print("VERMELHO: ");
+  Serial.println(corE->valorVermelho);
 //  Serial.print("VERDE: ");
 //  Serial.println(corD->valorVerde);
-//  Serial.print("BRANCO: ");
-//  Serial.println(corD->valorBranco);
+  Serial.print("BRANCO: ");
+  Serial.println(corE->valorBranco);
   delay(500);
+  
   
 }
