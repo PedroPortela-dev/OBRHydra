@@ -152,7 +152,7 @@ void loop() {
           break;
         }
       }
-      
+      timer = millis();
     }
     else if(digitalRead(sensForaE)==1 && digitalRead(sensForaD)==0){
       
@@ -169,8 +169,8 @@ void loop() {
           while(digitalRead(sensDentroE) == 0){};
           break;
         }
-      } 
-      
+      }
+      timer = millis();
     }
     else if (digitalRead(sensDentroD)==0 && digitalRead(sensDentroE)==1){ 
       //Esquerda  
@@ -187,6 +187,10 @@ void loop() {
     else{      
       velocidade(150,150);
     }
+
+//    if(verde && millis()-timer>400){
+//      fazer o verde
+//    }
   
 }
 
