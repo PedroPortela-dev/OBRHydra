@@ -176,8 +176,9 @@ class SensorCor{
 #define sensForaE 2
 #define PRETO 1
 #define BRANCO 0
+#define POWER 120
+#define DELAY 200
 
-int power = 120;
 unsigned long timer;
 
 Motor *md = new Motor(5,7,6, true);
@@ -236,7 +237,7 @@ void verificacaoSeguidor(){
     Frente();
   }
 
-  printh();
+  // printh();
 }
 
 void atualizacaoCor(){
@@ -257,15 +258,15 @@ void Chegada(){
 }
 
 void MeiaVolta(){
-  drive->direita(power);
+  drive->direita(POWER);
   do{atualizacaoCor();}while(corD != "Preto");
 }
 
 void DireitaVerde(){
  
- drive->frente(power);
+ drive->frente(POWER);
  timer = millis();
- while(millis()-timer>200){
+ while(millis()-timer>DELAY){
    atualizacaoCor();
    if(corE == "Verde"){
       MeiaVolta();
@@ -273,16 +274,16 @@ void DireitaVerde(){
    }
  }
  
- drive->direita(power);
+ drive->direita(POWER);
  do{atualizacaoCor();}while(corD != "Preto");
  
 }
 
 void EsquerdaVerde(){
 
- drive->frente(power);
+ drive->frente(POWER);
  timer = millis();
- while(millis()-timer>200){
+ while(millis()-timer>DELAY){
    atualizacaoCor();
    if(corD == "Verde"){
       MeiaVolta();
@@ -290,22 +291,22 @@ void EsquerdaVerde(){
    }
  }
  
- drive->esquerda(power);
+ drive->esquerda(POWER);
  do{atualizacaoCor();}while(corE != "Preto");
  
 
 }
 
 void Cruz(){
-  drive->frente(power);
-  delay(200);
+  drive->frente(POWER);
+  delay(DELAY);
 }
 
 void DireitaLonga(){
   
-  drive->frente(power);
+  drive->frente(POWER);
   timer = millis();
-  while(millis()-timer>200){
+  while(millis()-timer>DELAY){
     atualizacaoCor();
     if(digitalRead(sensForaE)==PRETO){
         Cruz();
@@ -313,15 +314,15 @@ void DireitaLonga(){
     }
   }
   
-  drive->direita(power);
+  drive->direita(POWER);
  do{atualizacaoCor();}while(corD != "Preto");
 }
 
 void EsquerdaLonga(){
   
-  drive->frente(power);
+  drive->frente(POWER);
   timer = millis();
-  while(millis()-timer>200){
+  while(millis()-timer>DELAY){
     atualizacaoCor();
     if(digitalRead(sensForaD)==PRETO){
         Cruz();
@@ -329,20 +330,20 @@ void EsquerdaLonga(){
     }
   }
   
-  drive->esquerda(power);
+  drive->esquerda(POWER);
  do{atualizacaoCor();}while(corE != "Preto");
 }
 
 void Direita(){
-  drive->direita(power);
+  drive->direita(POWER);
 }
 
 void Esquerda(){
-  drive->esquerda(power);
+  drive->esquerda(POWER);
 }
 
 void Frente(){
-  drive->frente(power);
+  drive->frente(POWER);
 }
 
 void setup() {
