@@ -1,13 +1,3 @@
-#define sensForaD 8
-#define sensForaE 2
-#define PRETO 1
-#define BRANCO 0
-
-String movimento;
-bool seguirLinha = true, curva90 = false;
-int velD=0 , velE=0,i =0, power = 120;
-unsigned long timer, timer1;
-
 class Motor{
   public:
     Motor(int p1, int p2, int v, bool forward){
@@ -181,6 +171,14 @@ class SensorCor{
 //      }
     }
 };
+
+#define sensForaD 8
+#define sensForaE 2
+#define PRETO 1
+#define BRANCO 0
+
+int power = 120;
+unsigned long timer;
 
 Motor *md = new Motor(5,7,6, true);
 Motor *me = new Motor(3,4,2, false);
