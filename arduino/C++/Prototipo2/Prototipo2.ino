@@ -240,8 +240,8 @@ void verificacaoSeguidor(){
 }
 
 void atualizacaoCor(){
-  String corD = sensorCorD->verificador();
-  String corE = sensorCorE->verificador();
+  corD = sensorCorD->verificador();
+  corE = sensorCorE->verificador();
 }
 
 void printh(){
