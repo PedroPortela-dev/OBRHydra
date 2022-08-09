@@ -1,82 +1,111 @@
-#define velmotorD 3
-#define md1 4
-#define md2 5
-
-#define velmotorE 11
-#define me1 12
-#define me2 13
-
 #define sensForaD 8
 #define sensForaE 2
-
-#define dist1 22
-
-#define tmp 700
+#define PRETO 1
+#define BRANCO 0
 
 String movimento;
 bool seguirLinha = true, curva90 = false;
-int velD=0 , velE=0,i =0 ;
-unsigned long time, timeInicio, timeFim;
+int velD=0 , velE=0,i =0, power = 120;
+unsigned long timer, timer1;
 
-void setup() {  
-  pinMode(velmotorD,OUTPUT);
-  pinMode(md1,OUTPUT);
-  pinMode(md2,OUTPUT);
-  digitalWrite(md1,LOW);
-  digitalWrite(md2,LOW);
-  analogWrite(velmotorD,velD);
+class Motor{
+  public:
+    Motor(int p1, int p2, int v, bool forward){
+      this->p1=p1;
+      this->p2=p2;
+      this->pv=v;
+      this->forward=forward;
+      pinMode(p1,OUTPUT);
+      pinMode(p2,OUTPUT);
+      pinMode(pv,OUTPUT);
+      digitalWrite(p1,LOW);
+      digitalWrite(p2,LOW);
+      digitalWrite(pv,0);
+    }
+    void frente(int v){
+      if(forward){
+        digitalWrite(p1,LOW);
+        digitalWrite(p2,HIGH);
+        analogWrite(pv,v);  
+      }else{
+        digitalWrite(p1,HIGH);
+        digitalWrite(p2,LOW);
+        analogWrite(pv,v);
+      }
+    }
+    void tras(int v){
+      if(forward){
+        digitalWrite(p1,HIGH);
+        digitalWrite(p2,LOW);
+        analogWrite(pv,v);
+      }else{
+        digitalWrite(p1,LOW);
+        digitalWrite(p2,HIGH);
+        analogWrite(pv,v);  
+      }
+    }
+    void parar(){
+      digitalWrite(p1,LOW);
+      digitalWrite(p2,LOW);
+      analogWrite(pv,0);
+    }
+    void freiar(){
+      digitalWrite(p1,HIGH);
+      digitalWrite(p2,HIGH);
+      analogWrite(pv,128);
+    }
+    void mover(int vel){
+      if(vel > 0){
+        frente(vel);
+      }
+      else if(vel < 0){
+        vel = -vel;
+        tras(vel);
+      }
+    }
+  private:
+    int p1,p2,pv;
+    bool forward;
+};
 
-  pinMode(velmotorE,OUTPUT);
-  pinMode(me1,OUTPUT);
-  pinMode(me2,OUTPUT);
-  digitalWrite(me1,LOW);
-  digitalWrite(me2,LOW);
-  analogWrite(velmotorE,velE);
-
-  // Falta S0 e S1 dos sensores de cor (Direira,Esquerda)
-
-  pinMode(sensForaD,INPUT);
-  pinMode(sensForaE,INPUT);
-
-  pinMode(dist1, INPUT);
-
-  Serial.begin(9600);
-//  BTserial.begin(9600);
-}
-
-void mover(int velD, int velE){
-  if(velD>0){
-    sentidoD(0,1,velD);
-  }else if(velD<0){
-    sentidoD(1,0,-velD);
-  }else{
-    sentidoD(1,1,0);
-  }
-  
-  if(velE>0){
-    sentidoE(0,1,velE);
-  }else if(velE<0){
-    sentidoE(1,0,-velE);
-  }else{
-    sentidoE(1,1,0);
-  }
-}
-
-void sentidoD(bool mdA, bool mdB, int velMD){
- 
-  digitalWrite(md1,mdA);
-  digitalWrite(md2,mdB);
-  analogWrite(velmotorD,velMD);
- 
-}
-
-void sentidoE(bool meA, bool meB, int velME){
-  
-  digitalWrite(me1,meA);
-  digitalWrite(me2,meB);
-  analogWrite(velmotorE,velME);
- 
-}
+class Driver{
+  public:
+    Driver(Motor *md, Motor *me){
+      this->mD=md;
+      this->mE=me;
+    }
+    void mover(int velD, int velE){
+      mD->mover(velD);
+      mE->mover(velE);
+    }
+    void frente(int vel){
+      mD->frente(vel);
+      mE->frente(vel);
+    }
+    void tras(int vel){
+      mD->tras(vel);
+      mE->tras(vel);
+    }
+    void direita(int vel){
+      mD->tras(vel);
+      mE->frente(vel);
+    }
+    void esquerda(int vel){
+      mD->frente(vel);
+      mE->tras(vel);
+    }
+    void parar(){
+      mD->parar();
+      mE->parar();
+    }
+    void freiar(){
+      mD->freiar();
+      mE->freiar();      
+    }
+  private:
+    Motor *mD;
+    Motor *mE;
+};
 
 class SensorCor{
   public:
@@ -151,20 +180,17 @@ class SensorCor{
 //        return "Verde";
 //      }
     }
-
-  private:
-   
 };
 
-
-SensorCor *sensorCorD = new SensorCor(6, 7, 8);
+Motor *md = new Motor(5,7,6, true);
+Motor *me = new Motor(3,4,2, false);
+Driver *drive = new Driver(md,me);
+SensorCor *sensorCorD = new SensorCor(6,7,8);
 SensorCor *sensorCorE = new SensorCor(5,3,4);
-
 
 void verificacaoSeguidor(){
   
-String corD = sensorCorD->verificador();
-String corE = sensorCorE->verificador();
+  atualizacaoCor();
   
   if(corD == "Vermelho" && corE == "Vermelho"){
     Serial.println("Chegada");
@@ -182,14 +208,18 @@ String corE = sensorCorE->verificador();
     Serial.println("EsqVerde");
     EsquerdaVerde();
   }
-//  else if (digitalRead(sensForaD)==1 && digitalRead(sensForaE)==0){
-//    Serial.println("DirLong");
-//    DireitaLonga();  
-//  }
-//  else if (digitalRead(sensForaE)==1 && digitalRead(sensForaD)==0){
-//    Serial.println("EsqLong");
-//    EsquerdaLonga();  
-//  }
+  else if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==PRETO){
+    Serial.println("Cruz");
+    Cruz();
+  }
+  else if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==BRANCO){
+    Serial.println("EstForaE");
+    EsquerdaLonga();
+  }
+  else if(digitalRead(sensForaE)==BRANCO && digitalRead(sensForaD)==PRETO){
+    Serial.println("EstForaD");
+    DireitaLonga();
+  }
   else if (corD == "Preto" && corE == "Branco"){ 
     Serial.println("Dir");
     Direita();
@@ -202,306 +232,131 @@ String corE = sensorCorE->verificador();
     Serial.println("Frente");
     Frente();
   }
+  else if (corD == "Preto" && corE == "Preto"){
+    Serial.println("Frente");
+    Frente();
+  }
+
+  printh();
 }
 
-void Chegada(){
-//  mover(0,0);
-  verificacaoSeguidor();
+void atualizacaoCor(){
+  String corD = sensorCorD->verificador();
+  String corE = sensorCorE->verificador();
 }
 
-void MeiaVolta(){
-  verificacaoSeguidor();
-}
-
-void DireitaVerde(){
-//  
-//  mover(120,120);
-//  delay(200);
-//  
-//  mover(-120,120);
-//  while(corE == "Branco"){}
-//  
-  verificacaoSeguidor();
-}
-
-void EsquerdaVerde(){
-
-//  mover(120,120);
-//  delay(200);
-//  
-//  mover(120,-120);
-//  while(corD == "Branco"){}
-//  
-  verificacaoSeguidor();
-
-}
-
-void DireitaLonga(){
-  
-//  mover(120,120);
-//  delay(200);
-//  
-//  mover(-120,120);
-//  while(corE == "Branco"){
-//    if(digitalRead(sensForaE)==1){
-//      mover(120,-120);
-//      while(corD == "Branco"){};
-//      break;
-//    } 
-//  }
-  verificacaoSeguidor();
-}
-
-void EsquerdaLonga(){
-  
-//  mover(120,120);
-//  delay(200);
-//  
-//  mover(120,-120);
-//  while(corD == "Branco"){
-//    if(digitalRead(sensForaD)==1){
-//      mover(-120,120);
-//      while(corE == "Branco"){};
-//      break;
-//    }
-//  }
-  verificacaoSeguidor();
-}
-
-void Direita(){
-//  mover(-120,120);
-  verificacaoSeguidor();
-}
-
-void Esquerda(){
-//  mover(120,-120);
-  verificacaoSeguidor();
-}
-
-void Frente(){
-//  mover(150,150);
-  verificacaoSeguidor();
-}
-
-
-void loop() {
-String corD = sensorCorD->verificador();
-String corE = sensorCorE->verificador();
-//  verificacaoSeguidor();
+void printh(){
   Serial.print("Direita :");
   Serial.println(corD);
   Serial.print("Esquerda :");
   Serial.println(corE);
-  delay(700);
 }
 
-/*
-#define velmotorD 3
-#define md1 4
-#define md2 5
+void Chegada(){
+  drive->freiar();
+  exit(0);
+}
 
-#define velmotorE 11
-#define me1 12
-#define me2 13
+void MeiaVolta(){
+  drive->direita(power);
+  do{atualizacaoCor();}while(corD != "Preto");
+}
 
-#define sensForaD 8
-#define sensForaE 2
+void DireitaVerde(){
+ 
+ drive->frente(power);
+ timer = millis();
+ while(millis()-timer>200){
+   atualizacaoCor();
+   if(corE == "Verde"){
+      MeiaVolta();
+      return;
+   }
+ }
+ 
+ drive->direita(power);
+ do{atualizacaoCor();}while(corD != "Preto");
+ 
+}
 
-#define dist1 22
+void EsquerdaVerde(){
 
-#define tmp 700
+ drive->frente(power);
+ timer = millis();
+ while(millis()-timer>200){
+   atualizacaoCor();
+   if(corD == "Verde"){
+      MeiaVolta();
+      return;
+   }
+ }
+ 
+ drive->esquerda(power);
+ do{atualizacaoCor();}while(corE != "Preto");
+ 
 
-bool seguirLinha = true, curva90 = false;
-int velD=0 , velE=0,i =0 ;
-unsigned long time, timeInicio, timeFim;
+}
+
+void Cruz(){
+  drive->frente(power);
+  delay(200);
+}
+
+void DireitaLonga(){
+  
+  drive->frente(power);
+  timer = millis();
+  while(millis()-timer>200){
+    atualizacaoCor();
+    if(digitalRead(sensForaE)==PRETO){
+        Cruz();
+        return;
+    }
+  }
+  
+  drive->direita(power);
+ do{atualizacaoCor();}while(corD != "Preto");
+}
+
+void EsquerdaLonga(){
+  
+  drive->frente(power);
+  timer = millis();
+  while(millis()-timer>200){
+    atualizacaoCor();
+    if(digitalRead(sensForaD)==PRETO){
+        Cruz();
+        return;
+    }
+  }
+  
+  drive->esquerda(power);
+ do{atualizacaoCor();}while(corE != "Preto");
+}
+
+void Direita(){
+  drive->direita(power);
+}
+
+void Esquerda(){
+  drive->esquerda(power);
+}
+
+void Frente(){
+  drive->frente(power);
+}
 
 void setup() {
-  pinMode(velmotorD,OUTPUT);
-  pinMode(md1,OUTPUT);
-  pinMode(md2,OUTPUT);
-  digitalWrite(md1,LOW);
-  digitalWrite(md2,LOW);
-  analogWrite(velmotorD,velD);
 
-  pinMode(velmotorE,OUTPUT);
-  pinMode(me1,OUTPUT);
-  pinMode(me2,OUTPUT);
-  digitalWrite(me1,LOW);
-  digitalWrite(me2,LOW);
-  analogWrite(velmotorE,velE);
+  // Falta S0 e S1 dos sensores de cor (Direira,Esquerda)
 
-  pinMode(sensDentroD,INPUT);
   pinMode(sensForaD,INPUT);
-  pinMode(sensDentroE,INPUT);
   pinMode(sensForaE,INPUT);
-
-  pinMode(dist1, INPUT);
 
   Serial.begin(9600);
 //  BTserial.begin(9600);
 }
 
-void mover(int velD, int velE){
-  if(velD>0){
-    sentidoD(0,1,velD);
-  }else if(velD<0){
-    sentidoD(1,0,-velD);
-  }else{
-    sentidoD(1,1,0);
-  }
-  
-  if(velE>0){
-    sentidoE(0,1,velE);
-  }else if(velE<0){
-    sentidoE(1,0,-velE);
-  }else{
-    sentidoE(1,1,0);
-  }
-}
-
-void sentidoD(bool mdA, bool mdB, int velMD){
- 
-  digitalWrite(md1,mdA);
-  digitalWrite(md2,mdB);
-  analogWrite(velmotorD,velMD);
- 
-}
-
-void sentidoE(bool meA, bool meB, int velME){
-  
-  digitalWrite(me1,meA);
-  digitalWrite(me2,meB);
-  analogWrite(velmotorE,velME);
- 
-}
-
 void loop() {
-  
-  while(seguirLinha){
-    time = millis();
-
-    // Seguir Linha
-    if(digitalRead(sensForaD)==1 && digitalRead(sensForaE)==0){
-      
-      mover(120,120);
-      delay(200);
-
-      //Direita
-      mover(-120,120);
-      while(digitalRead(sensDentroE) == 0){
-        if(digitalRead(sensForaE)==1){
-          //Esquerda
-          mover(120,-120);
-          while(digitalRead(sensDentroD) == 0){};
-          break;
-        }
-      }
-      timer = millis();
-    }
-    else if(digitalRead(sensForaE)==1 && digitalRead(sensForaD)==0){
-      
-      mover(120,120);
-      delay(200);
-
-      //Esquerda
-      mover(120,-120);
-      //testar continuidade
-      while(digitalRead(sensDentroD) == 0){
-        if(digitalRead(sensForaD)==1){
-          //Direita 
-          mover(-120,120);
-          while(digitalRead(sensDentroE) == 0){};
-          break;
-        }
-      }
-      timer = millis();
-    }
-    else if (digitalRead(sensDentroD)==0 && digitalRead(sensDentroE)==1){ 
-      //Esquerda  
-      mover(120,-120);
-      
-    }
-    
-    else if(digitalRead(sensDentroD)==1 && digitalRead(sensDentroE)==0){
-      //direita
-      mover(-120,120);
-    
-    }
-
-    else{      
-      velocidade(150,150);
-    }
-
+ verificacaoSeguidor();
 }
-
-class SensorCor{
-  public:
-    
-    SensorCor(int pinS2, int pinS3, int pinOut){
-      this.pinS2 = pinS2;
-      this.pinS3 = pinS3;
-      this.pinOut = pinOut;
-
-      pinMode(pinS2, OUTPUT);
-      pinMode(pinS3, OUTPUT);
-      pinMode(pinOut, INPUT);
-    }
-
-    void detectaCor() {
-      //Vermelho
-      digitalWrite(pinS2, LOW);
-      digitalWrite(pinS3, LOW);
-      valorVermelho = pulseIn(pinOut, !digitalRead(pinOut));
-      
-      //Sem filtro
-      digitalWrite(pinS2, HIGH);
-      valorBranco = pulseIn(pinOut, !digitalRead(pinOut));
-    
-      //Azul
-      digitalWrite(pinS2, LOW);
-      digitalWrite(pinS3, HIGH);
-      valorAzul = pulseIn(pinOut, !digitalRead(pinOut));
-    
-      //Verde
-      digitalWrite(pinS2, HIGH);
-      valorVerde = pulseIn(pinOut, !digitalRead(pinOut));
-    }
-
-    String verificador(int valorBranco, int valorVermelho, int valorVerde)
-    {
-      //Detecta a cor
-      detectaCor();
-    
-      if(valorBranco <= 4){
-        Serial.println("Branco");
-        return "Branco";
-      }else
-      if(abs(valorVermelho-valorVerde) < 5){
-        Serial.println("Preto");
-        return "Preto";
-      }else
-      //Verifica se a cor vermelha foi detectada
-      if (valorVermelho < valorVerde) {
-        Serial.println("Vermelho");
-        return "Vermelho";
-      } else 
-      if (valorVerde < valorVermelho)  //Verifica se a cor verde foi detectada
-      {
-        Serial.println("Verde");
-        return "Verde";
-      }
-    }
-
-  private:
-    unsigned int valorVermelho = 0;
-    unsigned int valorVerde = 0;
-    unsigned int valorAzul = 0;
-    unsigned int valorBranco = 0;
-  
-    int pinS2, pinS3, pinOut;
-}
-
-SensorCor *sensorCorD = new SensorCor(6, 7, 8);
-SensorCor *sensorCorE = new SensorCor(9, 10, 11);
-
-*/
