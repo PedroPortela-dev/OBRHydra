@@ -185,6 +185,7 @@ Motor *me = new Motor(3,4,2, false);
 Driver *drive = new Driver(md,me);
 SensorCor *sensorCorD = new SensorCor(6,7,8);
 SensorCor *sensorCorE = new SensorCor(5,3,4);
+String corD, corE;
 
 void verificacaoSeguidor(){
   
