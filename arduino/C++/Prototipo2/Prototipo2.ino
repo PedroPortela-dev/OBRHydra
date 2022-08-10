@@ -174,6 +174,8 @@ class SensorCor{
 
 #define sensForaD 8
 #define sensForaE 2
+#define sensDentroD 8
+#define sensDentroE 2
 #define PRETO 1
 #define BRANCO 0
 #define POWER 120
@@ -220,19 +222,19 @@ void verificacaoSeguidor(){
     Serial.println("EstForaD");
     DireitaLonga();
   }
-  else if (corD == "Preto" && corE == "Branco"){ 
+  else if (digitalRead(sensDentroE)==BRANCO && digitalRead(sensDentroD)==PRETO){ 
     Serial.println("Dir");
     Direita();
   }
-  else if (corD == "Branco" && corE == "Preto"){
+  else if (digitalRead(sensDentroE)==PRETO && digitalRead(sensDentroD)==BRANCO){
     Serial.println("Esq");
     Esquerda();  
   }
-  else if (corD == "Branco" && corE == "Branco"){
+  else if (digitalRead(sensDentroE)==BRANCO && digitalRead(sensDentroD)==BRANCO){
     Serial.println("Frente");
     Frente();
   }
-  else if (corD == "Preto" && corE == "Preto"){
+  else if (digitalRead(sensDentroE)==PRETO && digitalRead(sensDentroD)==PRETO){
     Serial.println("Frente");
     Frente();
   }
@@ -247,9 +249,9 @@ void atualizacaoCor(){
 
 void printh(){
   Serial.print("Direita :");
-  Serial.println(corD);
+  Serial.println(digitalRead(sensDentroD));
   Serial.print("Esquerda :");
-  Serial.println(corE);
+  Serial.println(digitalRead(sensDentroE));
 }
 
 void Chegada(){
@@ -259,7 +261,7 @@ void Chegada(){
 
 void MeiaVolta(){
   drive->direita(POWER);
-  do{atualizacaoCor();}while(corD != "Preto");
+  do{atualizacaoCor();}while(digitalRead(sensDentroD) != PRETO);
 }
 
 void DireitaVerde(){
@@ -275,7 +277,8 @@ void DireitaVerde(){
  }
  
  drive->direita(POWER);
- do{atualizacaoCor();}while(corD != "Preto");
+ delay(DELAY);
+ do{atualizacaoCor();}while(digitalRead(sensDentroD) != PRETO);
  
 }
 
@@ -292,7 +295,8 @@ void EsquerdaVerde(){
  }
  
  drive->esquerda(POWER);
- do{atualizacaoCor();}while(corE != "Preto");
+ delay(DELAY);
+ do{atualizacaoCor();}while(digitalRead(sensDentroE) != PRETO);
  
 
 }
@@ -315,7 +319,7 @@ void DireitaLonga(){
   }
   
   drive->direita(POWER);
- do{atualizacaoCor();}while(corD != "Preto");
+ do{atualizacaoCor();}while(digitalRead(sensDentroD) != PRETO);
 }
 
 void EsquerdaLonga(){
@@ -331,7 +335,7 @@ void EsquerdaLonga(){
   }
   
   drive->esquerda(POWER);
- do{atualizacaoCor();}while(corE != "Preto");
+ do{atualizacaoCor();}while(digitalRead(sensDentroE) != PRETO);
 }
 
 void Direita(){
@@ -352,6 +356,8 @@ void setup() {
 
   pinMode(sensForaD,INPUT);
   pinMode(sensForaE,INPUT);
+  pinMode(sensDentroD,INPUT);
+  pinMode(sensDentroE,INPUT);
 
   Serial.begin(9600);
 //  BTserial.begin(9600);
