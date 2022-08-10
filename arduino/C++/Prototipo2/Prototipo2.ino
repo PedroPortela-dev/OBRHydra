@@ -129,7 +129,7 @@ class SensorCor{
       valorBranco = pulseIn(pinOut, !digitalRead(pinOut));
     
       //Verde
-      digitalWrite(pinS2, HIGH);
+      digitalWrite(pinS3, HIGH);
       valorVerde = pulseIn(pinOut, !digitalRead(pinOut));
     }
 
