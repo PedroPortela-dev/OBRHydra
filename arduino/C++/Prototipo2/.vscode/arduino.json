@@ -1,0 +1,5 @@
+{
+    "sketch": "Prototipo2.ino",
+    "configuration": "cpu=atmega328old",
+    "board": "arduino:avr:nano"
+}
