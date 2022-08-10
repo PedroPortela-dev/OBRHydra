@@ -1,3 +1,5 @@
+#include <HCSR04.h>
+
 class Motor{
   public:
     Motor(int p1, int p2, int v, bool forward){
@@ -188,7 +190,28 @@ Motor *me = new Motor(3,4,2, false);
 Driver *drive = new Driver(md,me);
 SensorCor *sensorCorD = new SensorCor(6,7,8);
 SensorCor *sensorCorE = new SensorCor(5,3,4);
+UltraSonicDistanceSensor distanceSensorDown(13, 12);
+UltraSonicDistanceSensor distanceSensorUp(13, 12);
 String corD, corE;
+int distD, distU;
+
+void setup() {
+
+  // Falta S0 e S1 dos sensores de cor (Direira,Esquerda)
+
+  pinMode(sensForaD,INPUT);
+  pinMode(sensForaE,INPUT);
+  pinMode(sensDentroD,INPUT);
+  pinMode(sensDentroE,INPUT);
+
+  Serial.begin(9600);
+//  BTserial.begin(9600);
+}
+
+void loop() {
+ verificacaoSeguidor();
+ verificacaoObstaculo();
+}
 
 void verificacaoSeguidor(){
   
@@ -350,19 +373,47 @@ void Frente(){
   drive->frente(POWER);
 }
 
-void setup() {
+void verificacaoObstaculo(){
 
-  // Falta S0 e S1 dos sensores de cor (Direira,Esquerda)
+  atualizacaoDist();
 
-  pinMode(sensForaD,INPUT);
-  pinMode(sensForaE,INPUT);
-  pinMode(sensDentroD,INPUT);
-  pinMode(sensDentroE,INPUT);
-
-  Serial.begin(9600);
-//  BTserial.begin(9600);
+  if(distD < 10 && distU < 10){
+    Serial.println("Obstaculo");
+    obstaculo();
+  }
+  else if(distD < 10 && distU < 30){
+    Serial.println("Rampa");
+    // Rampa
+  }
+  else if(distD < 10 && distU > 30){
+    Serial.println("Kit resgate");
+    kitResgate();
+  }
+  
 }
 
-void loop() {
- verificacaoSeguidor();
+void atualizacaoDist(){
+  distD = distanceSensorDown.measureDistanceCm();
+  distU = distanceSensorUp.measureDistanceCm();
+}
+
+void obstaculo(){
+  drive->direita(POWER);
+  delay(DELAY*2);
+  drive->frente(POWER);
+  delay(DELAY);
+  drive->esquerda(POWER);
+  delay(DELAY*2);
+  drive->frente(POWER);
+  delay(DELAY);
+  drive->esquerda(POWER);
+  delay(DELAY*2);
+  drive->frente(POWER);
+  delay(DELAY);
+  drive->direita(POWER);
+  delay(DELAY*2);
+}
+
+void kitResgate(){
+  
 }
