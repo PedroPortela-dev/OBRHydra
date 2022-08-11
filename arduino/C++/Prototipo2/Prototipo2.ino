@@ -175,9 +175,9 @@ class SensorCor{
 };
 
 #define sensForaD 8
-#define sensForaE 2
-#define sensDentroD 8
-#define sensDentroE 2
+#define sensForaE 11
+#define sensDentroD 9
+#define sensDentroE 10
 #define PRETO 1
 #define BRANCO 0
 #define POWER 120
@@ -185,8 +185,8 @@ class SensorCor{
 
 unsigned long timer;
 
-Motor *md = new Motor(5,7,6, true);
-Motor *me = new Motor(3,4,2, false);
+Motor *md = new Motor(3,4,2, true);
+Motor *me = new Motor(5,6,7, false);
 Driver *drive = new Driver(md,me);
 SensorCor *sensorCorD = new SensorCor(6,7,8);
 SensorCor *sensorCorE = new SensorCor(5,3,4);
