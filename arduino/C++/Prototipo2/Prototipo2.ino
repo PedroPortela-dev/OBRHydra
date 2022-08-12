@@ -1,5 +1,15 @@
 #include <HCSR04.h>
 
+#define sensForaD 8
+#define sensForaE 11
+#define sensDentroD 9
+#define sensDentroE 10
+#define PRETO 1
+#define BRANCO 0
+#define POWER 100
+#define POWER1 80
+#define DELAY 200
+
 class Motor{
   public:
     Motor(int p1, int p2, int v, bool forward){
@@ -174,16 +184,6 @@ class SensorCor{
     }
 };
 
-#define sensForaD 8
-#define sensForaE 11
-#define sensDentroD 9
-#define sensDentroE 10
-#define PRETO 1
-#define BRANCO 0
-#define POWER 100
-#define POWER1 80
-#define DELAY 200
-
 unsigned long timer;
 
 Motor *md = new Motor(3,4,2, false);
@@ -211,42 +211,43 @@ void setup() {
 
 void loop() {
  verificacaoSeguidor();
- verificacaoObstaculo();
+// verificacaoObstaculo();
 }
 
 void verificacaoSeguidor(){
-  
-  atualizacaoCor();
-  
-  if(corD == "Vermelho" && corE == "Vermelho"){
-    Serial.println("Chegada");
-    Chegada();
-  }
-  else if (corD == "Verde" && corE == "Verde"){
-    Serial.println("MeiaVolta");
-    MeiaVolta();
-  }
-  else if (corD == "Verde" && corE != "Verde"){
-    Serial.println("DirVerde");
-    DireitaVerde();
-  }
-  else if (corD != "Verde" && corE == "Verde"){
-    Serial.println("EsqVerde");
-    EsquerdaVerde();
-  }
-  else if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==PRETO){
-    Serial.println("Cruz");
-    Cruz();
-  }
-  else if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==BRANCO){
-    Serial.println("EstForaE");
-    EsquerdaLonga();
-  }
-  else if(digitalRead(sensForaE)==BRANCO && digitalRead(sensForaD)==PRETO){
-    Serial.println("EstForaD");
-    DireitaLonga();
-  }
-  else if (digitalRead(sensDentroE)==BRANCO && digitalRead(sensDentroD)==PRETO){ 
+//  
+//  atualizacaoCor();
+//  
+//  if(corD == "Vermelho" && corE == "Vermelho"){
+//    Serial.println("Chegada");
+//    Chegada();
+//  }
+//  else if (corD == "Verde" && corE == "Verde"){
+//    Serial.println("MeiaVolta");
+//    MeiaVolta();
+//  }
+//  else if (corD == "Verde" && corE != "Verde"){
+//    Serial.println("DirVerde");
+//    DireitaVerde();
+//  }
+//  else if (corD != "Verde" && corE == "Verde"){
+//    Serial.println("EsqVerde");
+//    EsquerdaVerde();
+//  }
+//  else if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==PRETO){
+//    Serial.println("Cruz");
+//    Cruz();
+//  }
+//  else if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==BRANCO){
+//    Serial.println("EstForaE");
+//    EsquerdaLonga();
+//  }
+//  else if(digitalRead(sensForaE)==BRANCO && digitalRead(sensForaD)==PRETO){
+//    Serial.println("EstForaD");
+//    DireitaLonga();
+//  }
+//  else 
+  if (digitalRead(sensDentroE)==BRANCO && digitalRead(sensDentroD)==PRETO){ 
     Serial.println("Dir");
     Direita();
   }
