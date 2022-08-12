@@ -182,13 +182,14 @@ class SensorCor{
 #define sensDentroE 10
 #define PRETO 1
 #define BRANCO 0
-#define POWER 120
+#define POWER 100
+#define POWER1 80
 #define DELAY 200
 
 unsigned long timer;
 
-Motor *md = new Motor(3,4,2, true);
-Motor *me = new Motor(5,6,7, false);
+Motor *md = new Motor(3,4,2, false);
+Motor *me = new Motor(6,7,5, false);
 Driver *drive = new Driver(md,me);
 SensorCor *sensorCorD = new SensorCor(6,7,8);
 SensorCor *sensorCorE = new SensorCor(5,3,4);
