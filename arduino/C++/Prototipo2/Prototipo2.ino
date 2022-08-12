@@ -1,5 +1,3 @@
-//Sebastião é lindo, te amo e odeio sua desgraça
-
 #include <HCSR04.h>
 
 class Motor{
@@ -335,33 +333,33 @@ void Cruz(){
 void DireitaLonga(){
   
   drive->frente(POWER);
-  timer = millis();
-  while(millis()-timer>DELAY){
-    atualizacaoCor();
-    if(digitalRead(sensForaE)==PRETO){
-        Cruz();
-        return;
-    }
-  }
+  delay(DELAY);
   
   drive->direita(POWER);
- do{atualizacaoCor();}while(digitalRead(sensDentroD) != PRETO);
+  while(digitalRead(sensDentroE) != PRETO){
+    if(digitalRead(sensForaE)==PRETO){
+      //Direita 
+      drive->esquerda(POWER);
+      while(digitalRead(sensDentroD) != PRETO){};
+      break;
+    }
+  }
 }
 
 void EsquerdaLonga(){
   
   drive->frente(POWER);
-  timer = millis();
-  while(millis()-timer>DELAY){
-    atualizacaoCor();
-    if(digitalRead(sensForaD)==PRETO){
-        Cruz();
-        return;
-    }
-  }
+  delay(DELAY);
   
   drive->esquerda(POWER);
- do{atualizacaoCor();}while(digitalRead(sensDentroE) != PRETO);
+  while(digitalRead(sensDentroD) != PRETO){
+    if(digitalRead(sensForaD)==PRETO){
+      //Direita 
+      drive->direita(POWER);
+      while(digitalRead(sensDentroE) != PRETO){};
+      break;
+    }
+  }
 }
 
 void Direita(){
