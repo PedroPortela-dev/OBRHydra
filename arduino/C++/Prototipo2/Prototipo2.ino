@@ -326,10 +326,9 @@ void DireitaLonga(){
   drive->direita(POWER1);
   while(digitalRead(sensDentroE) != PRETO){
     if(digitalRead(sensForaE)==PRETO){
-      //Direita 
       drive->esquerda(POWER1);
       while(digitalRead(sensDentroD) != PRETO){};
-      break;
+      return;
     }
   }
 }
@@ -341,11 +340,10 @@ void EsquerdaLonga(){
   
   drive->esquerda(POWER1);
   while(digitalRead(sensDentroD) != PRETO){
-    if(digitalRead(sensForaD)==PRETO){
-      //Direita 
+    if(digitalRead(sensForaD)==PRETO){ 
       drive->direita(POWER1);
       while(digitalRead(sensDentroE) != PRETO){};
-      break;
+      return;
     }
   }
 }
