@@ -6,8 +6,8 @@
 #define sensDentroE 10
 #define PRETO 1
 #define BRANCO 0
-#define POWER 100
-#define POWER1 80
+#define POWER 70
+#define POWER1 120
 #define DELAY 200
 
 class Motor{
@@ -233,20 +233,20 @@ void verificacaoSeguidor(){
 //  else if (corD != "Verde" && corE == "Verde"){
 //    Serial.println("EsqVerde");
 //    EsquerdaVerde();
-//  }
-//  else if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==PRETO){
+//  } else 
+//  if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==PRETO){
 //    Serial.println("Cruz");
 //    Cruz();
 //  }
-//  else if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==BRANCO){
-//    Serial.println("EstForaE");
-//    EsquerdaLonga();
-//  }
-//  else if(digitalRead(sensForaE)==BRANCO && digitalRead(sensForaD)==PRETO){
-//    Serial.println("EstForaD");
-//    DireitaLonga();
-//  }
-//  else 
+  if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==BRANCO){
+    Serial.println("EstForaE");
+    EsquerdaLonga();
+  }
+  else if(digitalRead(sensForaE)==BRANCO && digitalRead(sensForaD)==PRETO){
+    Serial.println("EstForaD");
+    DireitaLonga();
+  }
+  else 
   if (digitalRead(sensDentroE)==BRANCO && digitalRead(sensDentroD)==PRETO){ 
     Serial.println("Dir");
     Direita();
@@ -336,11 +336,13 @@ void DireitaLonga(){
   drive->frente(POWER);
   delay(DELAY);
   
-  drive->direita(POWER);
+  drive->direita(POWER1);
   while(digitalRead(sensDentroE) != PRETO){
     if(digitalRead(sensForaE)==PRETO){
+      drive->frente(POWER);
+      delay(DELAY);
       //Direita 
-      drive->esquerda(POWER);
+      drive->esquerda(POWER1);
       while(digitalRead(sensDentroD) != PRETO){};
       break;
     }
@@ -352,11 +354,13 @@ void EsquerdaLonga(){
   drive->frente(POWER);
   delay(DELAY);
   
-  drive->esquerda(POWER);
+  drive->esquerda(POWER1);
   while(digitalRead(sensDentroD) != PRETO){
     if(digitalRead(sensForaD)==PRETO){
+      drive->frente(POWER);
+      delay(DELAY);
       //Direita 
-      drive->direita(POWER);
+      drive->direita(POWER1);
       while(digitalRead(sensDentroE) != PRETO){};
       break;
     }
@@ -364,11 +368,17 @@ void EsquerdaLonga(){
 }
 
 void Direita(){
-  drive->direita(POWER);
+//  drive->freiar();
+//  delay(50);
+  drive->direita(POWER1);
+//  delay(150);
 }
 
 void Esquerda(){
-  drive->esquerda(POWER);
+//  drive->freiar();
+//  delay(50);
+  drive->esquerda(POWER1);
+//  delay(150);
 }
 
 void Frente(){
