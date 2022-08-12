@@ -54,7 +54,7 @@ class Motor{
     void freiar(){
       digitalWrite(p1,HIGH);
       digitalWrite(p2,HIGH);
-      analogWrite(pv,128);
+      analogWrite(pv,255);
     }
     void mover(int vel){
       if(vel > 0){
@@ -198,15 +198,12 @@ int distD, distU;
 
 void setup() {
 
-  // Falta S0 e S1 dos sensores de cor (Direira,Esquerda)
-
   pinMode(sensForaD,INPUT);
   pinMode(sensForaE,INPUT);
   pinMode(sensDentroD,INPUT);
   pinMode(sensDentroE,INPUT);
 
   Serial.begin(9600);
-//  BTserial.begin(9600);
 }
 
 void loop() {
@@ -246,8 +243,7 @@ void verificacaoSeguidor(){
     Serial.println("EstForaD");
     DireitaLonga();
   }
-  else 
-  if (digitalRead(sensDentroE)==BRANCO && digitalRead(sensDentroD)==PRETO){ 
+  else if (digitalRead(sensDentroE)==BRANCO && digitalRead(sensDentroD)==PRETO){ 
     Serial.println("Dir");
     Direita();
   }
@@ -263,20 +259,11 @@ void verificacaoSeguidor(){
     Serial.println("Frente");
     Frente();
   }
-
-  // printh();
 }
 
 void atualizacaoCor(){
   corD = sensorCorD->verificador();
   corE = sensorCorE->verificador();
-}
-
-void printh(){
-  Serial.print("Direita :");
-  Serial.println(digitalRead(sensDentroD));
-  Serial.print("Esquerda :");
-  Serial.println(digitalRead(sensDentroE));
 }
 
 void Chegada(){
@@ -286,7 +273,7 @@ void Chegada(){
 
 void MeiaVolta(){
   drive->direita(POWER);
-  do{atualizacaoCor();}while(digitalRead(sensDentroD) != PRETO);
+  while(digitalRead(sensDentroD) != PRETO){};
 }
 
 void DireitaVerde(){
@@ -303,7 +290,7 @@ void DireitaVerde(){
  
  drive->direita(POWER);
  delay(DELAY);
- do{atualizacaoCor();}while(digitalRead(sensDentroD) != PRETO);
+ while(digitalRead(sensDentroD) != PRETO){};
  
 }
 
@@ -321,7 +308,7 @@ void EsquerdaVerde(){
  
  drive->esquerda(POWER);
  delay(DELAY);
- do{atualizacaoCor();}while(digitalRead(sensDentroE) != PRETO);
+ while(digitalRead(sensDentroE) != PRETO){};
  
 
 }
@@ -368,17 +355,11 @@ void EsquerdaLonga(){
 }
 
 void Direita(){
-//  drive->freiar();
-//  delay(50);
   drive->direita(POWER1);
-//  delay(150);
 }
 
 void Esquerda(){
-//  drive->freiar();
-//  delay(50);
   drive->esquerda(POWER1);
-//  delay(150);
 }
 
 void Frente(){
