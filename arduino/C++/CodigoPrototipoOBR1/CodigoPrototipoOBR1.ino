@@ -147,7 +147,6 @@ void loop() {
           break;
         }
       }
-      timer = millis();
     }
     else if(digitalRead(sensForaE)==1 && digitalRead(sensForaD)==0){
       
@@ -165,7 +164,6 @@ void loop() {
           break;
         }
       }
-      timer = millis();
     }
     else if (digitalRead(sensDentroD)==0 && digitalRead(sensDentroE)==1){ 
       //Esquerda  
@@ -178,7 +176,6 @@ void loop() {
       mover(-120,120);
     
     }
-
     else{      
       velocidade(150,150);
     }
@@ -262,3 +259,4 @@ void loop() {
     }
     
   */
+}
