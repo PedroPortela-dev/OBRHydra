@@ -231,10 +231,10 @@ void verificacaoSeguidor(){
 //    Serial.println("EsqVerde");
 //    EsquerdaVerde();
 //  } else 
-//  if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==PRETO){
-//    Serial.println("Cruz");
-//    Cruz();
-//  }
+  if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==PRETO){
+    Serial.println("Cruz");
+    Cruz();
+  }
   if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==BRANCO){
     Serial.println("EstForaE");
     EsquerdaLonga();
@@ -326,8 +326,6 @@ void DireitaLonga(){
   drive->direita(POWER1);
   while(digitalRead(sensDentroE) != PRETO){
     if(digitalRead(sensForaE)==PRETO){
-      drive->frente(POWER);
-      delay(DELAY);
       //Direita 
       drive->esquerda(POWER1);
       while(digitalRead(sensDentroD) != PRETO){};
@@ -344,8 +342,6 @@ void EsquerdaLonga(){
   drive->esquerda(POWER1);
   while(digitalRead(sensDentroD) != PRETO){
     if(digitalRead(sensForaD)==PRETO){
-      drive->frente(POWER);
-      delay(DELAY);
       //Direita 
       drive->direita(POWER1);
       while(digitalRead(sensDentroE) != PRETO){};
