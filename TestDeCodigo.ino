@@ -10,7 +10,8 @@
 #define BRANCOfora 0
 
 #define POWER 70
-#define POWER1 120
+#define POWER1 110
+#define POWER2 100
 
 #define velmotorD 2
 #define md1 3
@@ -21,20 +22,96 @@
 #define me1 6
 #define me2 7
 
-unsigned long timer;
+unsigned long timer, timer2;
 
 bool seguirLinha = true, curva90 = false;
 int velD=0 , velE=0,i =0 ;
 
+class SensorCor{
+  public:
+    
+    unsigned int valorVermelho = 0;
+    unsigned int valorVerde = 0;
+    unsigned int valorAzul = 0;
+    unsigned int valorBranco = 0;
+  
+    int pinS2, pinS3, pinOut;
+    
+    SensorCor(int pinOut, int pinS2, int pinS3){
+      this->pinS2 = pinS2;
+      this->pinS3 = pinS3;
+      this->pinOut = pinOut;
+
+      pinMode(pinS2, OUTPUT);
+      pinMode(pinS3, OUTPUT);
+      pinMode(pinOut, INPUT);
+    }
+
+    void detectaCor() {
+      //Vermelho
+      digitalWrite(pinS2, LOW);
+      digitalWrite(pinS3, LOW);
+      valorVermelho = pulseIn(pinOut, !digitalRead(pinOut));
+      
+      //Sem filtro
+      digitalWrite(pinS2, HIGH);
+      valorBranco = pulseIn(pinOut, !digitalRead(pinOut));
+    
+      //Azul
+      digitalWrite(pinS2, LOW);
+      digitalWrite(pinS3, HIGH);
+      valorAzul = pulseIn(pinOut, !digitalRead(pinOut));
+    
+      //Verde
+      digitalWrite(pinS2, HIGH);
+      valorVerde = pulseIn(pinOut, !digitalRead(pinOut));
+    }
+
+    bool verificador()
+    {
+      //Detecta a cor
+      detectaCor();
+    
+      if(valorVermelho-valorVerde > 5){ // Calibragem para verificação do verde
+        if(millis()-timer > 100){
+          Serial.println("Verde");
+          return true; 
+        }
+        Serial.println("SERA VERDE!");
+        return false;
+      }
+      timer = millis();
+      Serial.println("!Verde");
+      return false;
+    }
+
+  private:
+};
+
+SensorCor *corD = new SensorCor(53, 51, 49);
+SensorCor *corE = new SensorCor(52, 50, 48);
+
 void printh(){
 //  Serial.print("DireitaF :");
 //  Serial.println(digitalRead(sensForaD));
-  Serial.print("DireitaD :");
-  Serial.println(digitalRead(sensDentroD));
+//  Serial.print("DireitaD :");
+//  Serial.println(digitalRead(sensDentroD));
 //  Serial.print("EsquerdaF :");
 //  Serial.println(digitalRead(sensForaE));
-  Serial.print("EsquerdaD :");
-  Serial.println(digitalRead(sensDentroE));
+//  Serial.print("EsquerdaD :");
+//  Serial.println(digitalRead(sensDentroE));
+//  Serial.println(); corE->verificador();
+
+  Serial.print("COR :");
+  corD->verificador();
+  Serial.print("BRANCO:");
+  Serial.println(corD->valorBranco);
+  Serial.print("VERMELHO:");
+  Serial.println(corD->valorVermelho);
+  Serial.print("VERDE:");
+  Serial.println(corD->valorVerde);
+  Serial.print("AZUL:");
+  Serial.println(corD->valorAzul);
   Serial.println();
 }
 
@@ -96,21 +173,38 @@ void loop() {
   
   while(seguirLinha){
 //    time = millis();
-
+//  Serial.print("Direita :");
+//  corD->verificador(); 
+//  Serial.print("Esquerda :");
+//  corE->verificador();
+//  Serial.println();
     // Seguir Linha
    // /*
+//   if(corD->verificador() == true ){ //|| corE->verificador() == true
+//    mover(0,0);
+//    printh();
+//    delay(5000);
+//   }
     if(digitalRead(sensForaD)== PRETOfora && digitalRead(sensForaE)== BRANCOfora){
       
-      mover(POWER,POWER);
-      delay(150);
+      mover(POWER,POWER); //Frente
+      delay(250);
 
+//      if(corD->verificador() == true){
+//        mover(0,0);
+//        delay(5000);
+//      }
+      
       //Direita
-      mover(-POWER1,POWER1);
+      mover(-POWER2,POWER1);
       while(digitalRead(sensDentroE) == BRANCOdentro){
+//        corD->verificador();
         if(digitalRead(sensForaE)== PRETOfora ){
           //Esquerda
-          mover(POWER1,-POWER1);
-          while(digitalRead(sensDentroD) == BRANCOdentro){};
+          mover(POWER1,-POWER2);
+          while(digitalRead(sensDentroD) == BRANCOdentro){
+//            corD->verificador();
+          }
           break;
         }
       }
@@ -119,16 +213,24 @@ void loop() {
     else if(digitalRead(sensForaE) == PRETOfora && digitalRead(sensForaD)==BRANCOfora){
       
       mover(POWER,POWER);
-      delay(150);
+      delay(250);
+
+//      if(corD->verificador() == true){
+//        mover(0,0);
+//        delay(5000);
+//      }
 
       //Esquerda
-      mover(POWER1,-POWER1);
+      mover(POWER1,-POWER2);
       //testar continuidade
       while(digitalRead(sensDentroD) == BRANCOdentro){
+//        corD->verificador();
         if(digitalRead(sensForaD)== PRETOfora ){
           //Direita 
-          mover(-POWER1,POWER1);
-          while(digitalRead(sensDentroE) == BRANCOdentro){};
+          mover(-POWER2,POWER1);
+          while(digitalRead(sensDentroE) == BRANCOdentro){
+//            corD->verificador();
+          }
           break;
         }
       }
