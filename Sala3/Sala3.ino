@@ -116,31 +116,45 @@ class Driver{
 };
 
 
-UltraSonicDistanceSensor sensorDistance1(p_trigger1,p_echo1);
-UltraSonicDistanceSensor sensorDistance2(p_trigger2,p_echo2);
+UltraSonicDistanceSensor sensorDistance1(p_trigger2,p_echo2);
+UltraSonicDistanceSensor sensorDistance2(p_trigger1,p_echo1);
 Motor *md = new Motor(md1,md2,velmotorD, true);
 Motor *me = new Motor(me1,me2,velmotorE, false);
 Driver *drive = new Driver(md,me);
 
-void acharTriangulo(float distbaixo){
-  if(distbaixo > 65){
+void parede(){
+  drive->tras(100);
+  delay(500);
+  md->frente(128);
+  me->freiar();
+  delay(1700);
+  drive->tras(100);
+  delay(1000);
+}
+
+void acharTriangulo(){
+  float distbaixo = sensorDistance1.measureDistanceCm();
+  float distcima = sensorDistance2.measureDistanceCm();
+  if(distbaixo >= 70){
     Serial.println("ACHEI TRIANGULO");
     drive->freiar();
+  }else if(distcima - distbaixo > 10){
+    Serial.println("VITIMA");
+    drive->freiar();
   }
-  else if(distbaixo < 5){
-    Serial.println("VIRAR E CONTINUAR PROCURANDO");
-    drive->tras(100);
-    delay(1000);
-    drive->esquerda(128);
-    delay(1000);
-    drive->tras(100);
-    delay(1000);
+  else if(distcima <10){
+    Serial.println("PAREDE");
+    drive->freiar();
+    delay(40);
+    parede();
   }else{
     drive->frente(100);
-    Serial.println("IR PARA FRENTE");
+    Serial.println("FRENTE");
   }
-  Serial.print("DISTANCE BAIXO: ");
-  Serial.println(distbaixo);
+  Serial.print("DISTANCIA CIMA: ");
+  Serial.println(distcima);
+  Serial.print("DISTANCIA BAIXO: ");
+  Serial.print(distbaixo);
 }
 
 void capturarVitima(float distFrente){
@@ -196,10 +210,13 @@ void setup() {
 }
 
 void loop() {
-  float distD = sensorDistance1.measureDistanceCm();
-  float distBaixo = sensorDistance2.measureDistanceCm();
-  //acharTriangulo(distBaixo);
-  acharVitimas(distD,distBaixo);
+  //acharTriangulo();
+  //acharVitimas(distD,distBaixo);
+  Serial.println("oi");
+  drive->frente(128);
+  delay(3000);
+  drive->freiar();
+  delay(5000);
 }
 
   //float distcima = sensorDistance1.measureDistanceCm();
