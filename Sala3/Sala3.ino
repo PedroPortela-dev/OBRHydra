@@ -164,22 +164,26 @@ void acharVitimas(float distD,float distFrente){
 //  if(distD < 70 && distD > 60){
 //    distParede = distD;
 //  }
-//  else if(distParede - distD > 3){
+//  if(distParede - distD > 3){
 //    Serial.println("Achei Vitima");
-//    drive->freiar();
-//    capturarVitima(distFrente);
+//    //drive->freiar();
+//    //delay(5000);
+//    //capturarVitima(distFrente);
 //  }
-  if(distD <55){
+  if(distD < 38){
     Serial.println("Achei Vitima");
     drive->freiar();
-    capturarVitima(distFrente);
+    delay(5000);
+    // capturarVitima(distFrente);
   }
   else{
     Serial.println("Procurando vitima");
     drive->tras(80);
   }
-  Serial.print("DISTANCIA PAREDE");
-  Serial.println(distParede);
+//  Serial.print("DISTANCIA PAREDE");
+//  Serial.println(distParede);
+  Serial.print("DISTANCIA FRENTE: ");
+  Serial.println(distFrente); 
   Serial.print("DISTANCIA ATUAL: ");
   Serial.println(distD);
   Serial.print("Variacao");
@@ -196,7 +200,6 @@ void loop() {
   float distBaixo = sensorDistance2.measureDistanceCm();
   //acharTriangulo(distBaixo);
   acharVitimas(distD,distBaixo);
-  delay(1000);
 }
 
   //float distcima = sensorDistance1.measureDistanceCm();
