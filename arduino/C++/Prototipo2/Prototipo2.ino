@@ -4,11 +4,18 @@
 #define sensForaE 11
 #define sensDentroD 9
 #define sensDentroE 10
-#define PRETO 1
-#define BRANCO 0
+#define PRETOd 0
+#define BRANCOd 1
+#define PRETOf 1
+#define BRANCOf 0
 #define POWER 70
-#define POWER1 120
-#define DELAY 200
+#define POWER1 110
+#define POWER2 100
+#define POWER3 140
+#define DELAY 250
+#define DELAY1 500
+#define DELAY2 1700
+#define DELAY3 2000
 
 class Motor{
   public:
@@ -63,6 +70,8 @@ class Motor{
       else if(vel < 0){
         vel = -vel;
         tras(vel);
+      }else{
+        freiar();
       }
     }
   private:
@@ -161,26 +170,6 @@ class SensorCor{
         Serial.println("BRANCO");
         return "Branco";
       }
-
-    
-//      if(valorBranco <= 3){
-//        Serial.println("Branco");
-//        return "Branco";
-//      }else
-//      if(abs(valorVermelho-valorVerde) < 5){
-//        Serial.println("Preto");
-//        return "Preto";
-//      }else
-//      //Verifica se a cor vermelha foi detectada
-//      if (valorVermelho < valorVerde) {
-//        Serial.println("Vermelho");
-//        return "Vermelho";
-//      } else 
-//      if (valorVerde < valorVermelho)  //Verifica se a cor verde foi detectada
-//      {
-//        Serial.println("Verde");
-//        return "Verde";
-//      }
     }
 };
 
@@ -189,10 +178,12 @@ unsigned long timer;
 Motor *md = new Motor(3,4,2, false);
 Motor *me = new Motor(6,7,5, false);
 Driver *drive = new Driver(md,me);
-SensorCor *sensorCorD = new SensorCor(6,7,8);
-SensorCor *sensorCorE = new SensorCor(5,3,4);
+SensorCor *corD = new SensorCor(53, 51, 49);
+SensorCor *corE = new SensorCor(52, 50, 48);
 UltraSonicDistanceSensor distanceSensorDown(13, 12);
 UltraSonicDistanceSensor distanceSensorUp(13, 12);
+UltraSonicDistanceSensor distanceSensorLeft(13, 12);
+UltraSonicDistanceSensor distanceSensorRight(13, 12);
 String corD, corE;
 int distD, distU;
 
@@ -208,7 +199,7 @@ void setup() {
 
 void loop() {
  verificacaoSeguidor();
-// verificacaoObstaculo();
+ verificacaoObstaculo();
 }
 
 void verificacaoSeguidor(){
@@ -231,31 +222,31 @@ void verificacaoSeguidor(){
 //    Serial.println("EsqVerde");
 //    EsquerdaVerde();
 //  } else 
-  if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==PRETO){
+  if(digitalRead(sensForaE)==PRETOf && digitalRead(sensForaD)==PRETOf){
     Serial.println("Cruz");
     Cruz();
   }
-  if(digitalRead(sensForaE)==PRETO && digitalRead(sensForaD)==BRANCO){
+  if(digitalRead(sensForaE)==PRETOf && digitalRead(sensForaD)==BRANCOf){
     Serial.println("EstForaE");
     EsquerdaLonga();
   }
-  else if(digitalRead(sensForaE)==BRANCO && digitalRead(sensForaD)==PRETO){
+  else if(digitalRead(sensForaE)==BRANCOf && digitalRead(sensForaD)==PRETOf){
     Serial.println("EstForaD");
     DireitaLonga();
   }
-  else if (digitalRead(sensDentroE)==BRANCO && digitalRead(sensDentroD)==PRETO){ 
+  else if (digitalRead(sensDentroE)==BRANCOd && digitalRead(sensDentroD)==PRETOd){ 
     Serial.println("Dir");
     Direita();
   }
-  else if (digitalRead(sensDentroE)==PRETO && digitalRead(sensDentroD)==BRANCO){
+  else if (digitalRead(sensDentroE)==PRETOd && digitalRead(sensDentroD)==BRANCOd){
     Serial.println("Esq");
     Esquerda();  
   }
-  else if (digitalRead(sensDentroE)==BRANCO && digitalRead(sensDentroD)==BRANCO){
+  else if (digitalRead(sensDentroE)==BRANCOd && digitalRead(sensDentroD)==BRANCOd){
     Serial.println("Frente");
     Frente();
   }
-  else if (digitalRead(sensDentroE)==PRETO && digitalRead(sensDentroD)==PRETO){
+  else if (digitalRead(sensDentroE)==PRETOd && digitalRead(sensDentroD)==PRETOd){
     Serial.println("Frente");
     Frente();
   }
@@ -273,7 +264,7 @@ void Chegada(){
 
 void MeiaVolta(){
   drive->direita(POWER);
-  while(digitalRead(sensDentroD) != PRETO){};
+  while(digitalRead(sensDentroD) != PRETOd){};
 }
 
 void DireitaVerde(){
@@ -290,7 +281,7 @@ void DireitaVerde(){
  
  drive->direita(POWER);
  delay(DELAY);
- while(digitalRead(sensDentroD) != PRETO){};
+ while(digitalRead(sensDentroD) != PRETOd){};
  
 }
 
@@ -308,7 +299,7 @@ void EsquerdaVerde(){
  
  drive->esquerda(POWER);
  delay(DELAY);
- while(digitalRead(sensDentroE) != PRETO){};
+ while(digitalRead(sensDentroE) != PRETOd){};
  
 
 }
@@ -323,11 +314,11 @@ void DireitaLonga(){
   drive->frente(POWER);
   delay(DELAY);
   
-  drive->direita(POWER1);
-  while(digitalRead(sensDentroE) != PRETO){
-    if(digitalRead(sensForaE)==PRETO){
-      drive->esquerda(POWER1);
-      while(digitalRead(sensDentroD) != PRETO){};
+  drive->mover(-POWER2, POWER1);
+  while(digitalRead(sensDentroE) != PRETOd){
+    if(digitalRead(sensForaE)==PRETOf){
+      drive->mover(POWER1,-POWER2);
+      while(digitalRead(sensDentroD) != PRETOd){};
       return;
     }
   }
@@ -338,11 +329,11 @@ void EsquerdaLonga(){
   drive->frente(POWER);
   delay(DELAY);
   
-  drive->esquerda(POWER1);
-  while(digitalRead(sensDentroD) != PRETO){
-    if(digitalRead(sensForaD)==PRETO){ 
-      drive->direita(POWER1);
-      while(digitalRead(sensDentroE) != PRETO){};
+  drive->mover(POWER1,-POWER2);
+  while(digitalRead(sensDentroD) != PRETOd){
+    if(digitalRead(sensForaD)==PRETOf){ 
+      drive->mover(-POWER2,POWER1);
+      while(digitalRead(sensDentroE) != PRETOd){};
       return;
     }
   }
@@ -363,20 +354,20 @@ void Frente(){
 void verificacaoObstaculo(){
 
   atualizacaoDist();
-
-  if(distD < 10 && distU < 10){
-    Serial.println("Obstaculo");
-    obstaculo();
+  if(distD > 0 && distU > 0){
+    if(distD < 10 && distU < 10){
+      Serial.println("Obstaculo");
+      obstaculo();
+    }
+    else if(distD < 10 && distU < 30){
+      Serial.println("Rampa");
+      // Rampa
+    }
+    else if(distD < 10 && distU > 30){
+      Serial.println("Kit resgate");
+      kitResgate();
+    }
   }
-  else if(distD < 10 && distU < 30){
-    Serial.println("Rampa");
-    // Rampa
-  }
-  else if(distD < 10 && distU > 30){
-    Serial.println("Kit resgate");
-    kitResgate();
-  }
-  
 }
 
 void atualizacaoDist(){
@@ -384,21 +375,29 @@ void atualizacaoDist(){
   distU = distanceSensorUp.measureDistanceCm();
 }
 
-void obstaculo(){
-  drive->direita(POWER);
-  delay(DELAY*2);
-  drive->frente(POWER);
+void obstaculo()
+{
+  drive->direita(POWER); //Giro a Direita
+  delay(DELAY1);
+
+  drive->frente(POWER); //Frente
+  delay(DELAY2);
+
+  drive->esquerda(POWER); //Giro a Esquerda
+  delay(DELAY1);
+
+  drive->frente(POWER); //Frente
+  delay(DELAY3);
+
+  drive->esquerda(POWER); //Giro a Esquerda
+  delay(DELAY1);
+
+  drive->frente(POWER); //Frente
+  while (digitalRead(sensDentroD) == BRANCOd || digitalRead(sensDentroE) == BRANCOd || digitalRead(sensForaD) == BRANCOf || digitalRead(sensForaE) == BRANCOf){}  
   delay(DELAY);
-  drive->esquerda(POWER);
-  delay(DELAY*2);
-  drive->frente(POWER);
-  delay(DELAY);
-  drive->esquerda(POWER);
-  delay(DELAY*2);
-  drive->frente(POWER);
-  delay(DELAY);
-  drive->direita(POWER);
-  delay(DELAY*2);
+
+  drive->direita(POWER); //Giro a Direita
+  while(digitalRead(sensDentroE)== BRANCOd){}
 }
 
 void kitResgate(){
