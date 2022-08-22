@@ -2,18 +2,20 @@
 
 // PORTA 5 COM DEFEITO
 #define velmotorD 3
-#define md1 2
-#define md2 4
+#define md1 4
+#define md2 2
 
-#define velmotorE 6
+#define velmotorE 13
 #define me1 7
 #define me2 8
 
 // trigger PWM
-#define p_trigger1 11 
-#define p_trigger2 A0
-#define p_echo1 10
-#define p_echo2 12
+#define p_trigger1 24
+#define p_echo1 22
+#define p_trigger2 28
+#define p_echo2 26
+#define p_trigger3 10
+#define p_echo3 11
 #define sensFrente 0
 
 class Motor{
@@ -116,9 +118,11 @@ class Driver{
 };
 
 
-UltraSonicDistanceSensor sensorDistance1(p_trigger2,p_echo2);
-UltraSonicDistanceSensor sensorDistance2(p_trigger1,p_echo1);
-Motor *md = new Motor(md1,md2,velmotorD, true);
+UltraSonicDistanceSensor distanceSensorDown(p_trigger2, p_echo2);
+UltraSonicDistanceSensor distanceSensorUp(p_trigger1,p_echo1);
+//UltraSonicDistanceSensor distanceSensorLeft(, 12);
+UltraSonicDistanceSensor distanceSensorRight(p_trigger3, p_echo3);
+Motor *md = new Motor(md1,md2,velmotorD, false);
 Motor *me = new Motor(me1,me2,velmotorE, false);
 Driver *drive = new Driver(md,me);
 
@@ -132,9 +136,7 @@ void parede(){
   delay(1000);
 }
 
-void acharTriangulo(){
-  float distbaixo = sensorDistance1.measureDistanceCm();
-  float distcima = sensorDistance2.measureDistanceCm();
+void acharTriangulo(float distcima,float distbaixo){
   if(distbaixo >= 70){
     Serial.println("ACHEI TRIANGULO");
     drive->freiar();
@@ -210,13 +212,11 @@ void setup() {
 }
 
 void loop() {
-  //acharTriangulo();
+  float distbaixo = distanceSensorDown.measureDistanceCm();
+  float distcima = distanceSensorUp.measureDistanceCm();
+  float distdireita = distanceSensorRight.measureDistanceCm();
+  acharTriangulo(distcima,distbaixo);
   //acharVitimas(distD,distBaixo);
-  Serial.println("oi");
-  drive->frente(128);
-  delay(3000);
-  drive->freiar();
-  delay(5000);
 }
 
   //float distcima = sensorDistance1.measureDistanceCm();
