@@ -140,22 +140,6 @@ void irMeio(){
   frente(100);
   while(dist > 33){}
   return;
-  //ACHEI COMPLICADO E PODE NÃO DAR CERTO ENTÃO OPTEI PELO SIMPLES
-  // bool distanciei = false;
-  //   if(distc < 33 && !distanciei){
-  //     drive->frente(100);
-  //     while(distc < 33){}
-  //     distanciei = !distanciei;
-  //   }else if(distc > 33 && !distanciei){
-  //     drive->tras(100);
-  //     while(distc > 33){}
-  //     distanciei = !distanciei
-  //   }
-  //   else{
-  //     drive->freiar();
-  //     delay(50);
-  //     return
-  //   }
 }
 
 boolean triangulo(){
