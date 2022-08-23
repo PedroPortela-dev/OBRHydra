@@ -139,6 +139,7 @@ void irMeio(){
   delay(3000);
   frente(100);
   while(dist > 33){}
+  return;
   //ACHEI COMPLICADO E PODE NÃO DAR CERTO ENTÃO OPTEI PELO SIMPLES
   // bool distanciei = false;
   //   if(distc < 33 && !distanciei){
@@ -236,7 +237,7 @@ void despejo(){
     drive->tras(100);
     delay(4000);
     // DESPEJAR
-  else{
+  }else{
     drive->direita(100);
     delay(1500);
     drive->tras(100);
@@ -244,6 +245,8 @@ void despejo(){
     // DESPEJAR
   }
 }
+
+
 void capturarVitima(){
   //DESCE GARRA
   drive->frente(128);
@@ -251,22 +254,6 @@ void capturarVitima(){
   //SOBE GARRA
 }
 
-void setup() {
-  Serial.begin(9600);
-}
-
-void loop() {
-  distb = distanceSensorDown.measureDistanceCm();
-  distc = distanceSensorUp.measureDistanceCm();
-  distd = distanceSensorRight.measureDistanceCm();
-  diste = distanceSensorLeft.measureDistanceCm();
-  if(distd < diste){
-    entrada = "esquerda"
-  }else{
-    entrada = "direita"
-  }
-  acharTriangulo();
-}
 
 void acharTriangulo(){
   if(distb >= 70){
@@ -304,4 +291,21 @@ void parede(){
   delay(1700);
   drive->tras(100);
   delay(1000);
+}
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  distb = distanceSensorDown.measureDistanceCm();
+  distc = distanceSensorUp.measureDistanceCm();
+  distd = distanceSensorRight.measureDistanceCm();
+  diste = distanceSensorLeft.measureDistanceCm();
+  if(distd < diste){
+    entrada = "esquerda"
+  }else{
+    entrada = "direita"
+  }
+  acharTriangulo();
 }
