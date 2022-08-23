@@ -178,8 +178,8 @@ unsigned long timer;
 Motor *md = new Motor(3,4,2, false);
 Motor *me = new Motor(6,7,5, false);
 Driver *drive = new Driver(md,me);
-SensorCor *corD = new SensorCor(53, 51, 49);
-SensorCor *corE = new SensorCor(52, 50, 48);
+SensorCor *SensorCorD = new SensorCor(53, 51, 49);
+SensorCor *SensorCorE = new SensorCor(52, 50, 48);
 UltraSonicDistanceSensor distanceSensorDown(13, 12);
 UltraSonicDistanceSensor distanceSensorUp(13, 12);
 UltraSonicDistanceSensor distanceSensorLeft(13, 12);
@@ -253,8 +253,8 @@ void verificacaoSeguidor(){
 }
 
 void atualizacaoCor(){
-  corD = sensorCorD->verificador();
-  corE = sensorCorE->verificador();
+  corD = SensorCorD->verificador();
+  corE = SensorCorE->verificador();
 }
 
 void Chegada(){

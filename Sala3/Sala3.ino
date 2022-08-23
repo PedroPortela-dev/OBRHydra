@@ -62,7 +62,7 @@ class Motor{
     void freiar(){
       digitalWrite(p1,HIGH);
       digitalWrite(p2,HIGH);
-      analogWrite(pv,128);
+      analogWrite(pv,255);
     }
     void mover(int vel){
       if(vel > 0){
@@ -71,6 +71,9 @@ class Motor{
       else if(vel < 0){
         vel = -vel;
         tras(vel);
+      }
+      else{
+        freiar();
       }
     }
   private:
@@ -120,46 +123,26 @@ class Driver{
 
 UltraSonicDistanceSensor distanceSensorDown(p_trigger2, p_echo2);
 UltraSonicDistanceSensor distanceSensorUp(p_trigger1,p_echo1);
-//UltraSonicDistanceSensor distanceSensorLeft(, 12);
+UltraSonicDistanceSensor distanceSensorLeft(52, 53);
 UltraSonicDistanceSensor distanceSensorRight(p_trigger3, p_echo3);
 Motor *md = new Motor(md1,md2,velmotorD, false);
 Motor *me = new Motor(me1,me2,velmotorE, false);
 Driver *drive = new Driver(md,me);
 
-void parede(){
-  drive->tras(100);
-  delay(500);
-  md->frente(128);
-  me->freiar();
-  delay(1700);
-  drive->tras(100);
-  delay(1000);
+float distb, distc, distd, diste;
+int lado;
+String entrada = ".";
+
+boolean triangulo(){
+  if(lado%2 == 0){
+
+  }
+  else{
+
+  }
 }
 
-void acharTriangulo(float distcima,float distbaixo){
-  if(distbaixo >= 70){
-    Serial.println("ACHEI TRIANGULO");
-    drive->freiar();
-  }else if(distcima - distbaixo > 10){
-    Serial.println("VITIMA");
-    drive->freiar();
-  }
-  else if(distcima <10){
-    Serial.println("PAREDE");
-    drive->freiar();
-    delay(40);
-    parede();
-  }else{
-    drive->frente(100);
-    Serial.println("FRENTE");
-  }
-  Serial.print("DISTANCIA CIMA: ");
-  Serial.println(distcima);
-  Serial.print("DISTANCIA BAIXO: ");
-  Serial.print(distbaixo);
-}
-
-void capturarVitima(float distFrente){
+void capturarVitima(){
    drive->tras(100);
    delay(200);
    drive->direita(128);
@@ -175,51 +158,50 @@ void capturarVitima(float distFrente){
    delay(timer2);
 }
 
-void acharVitimas(float distD,float distFrente){
-  float distParede;
-//  if(distD < 70 && distD > 60){
-//    distParede = distD;
-//  }
-//  if(distParede - distD > 3){
-//    Serial.println("Achei Vitima");
-//    //drive->freiar();
-//    //delay(5000);
-//    //capturarVitima(distFrente);
-//  }
-  if(distD < 38){
-    Serial.println("Achei Vitima");
-    drive->freiar();
-    delay(5000);
-    // capturarVitima(distFrente);
-  }
-  else{
-    Serial.println("Procurando vitima");
-    drive->tras(80);
-  }
-//  Serial.print("DISTANCIA PAREDE");
-//  Serial.println(distParede);
-  Serial.print("DISTANCIA FRENTE: ");
-  Serial.println(distFrente); 
-  Serial.print("DISTANCIA ATUAL: ");
-  Serial.println(distD);
-  Serial.print("Variacao");
-  Serial.println(distParede - distD);
-  Serial.println("-----------------------");
-}
-
 void setup() {
   Serial.begin(9600);
 }
 
 void loop() {
-  float distbaixo = distanceSensorDown.measureDistanceCm();
-  float distcima = distanceSensorUp.measureDistanceCm();
-  float distdireita = distanceSensorRight.measureDistanceCm();
-  acharTriangulo(distcima,distbaixo);
-  //acharVitimas(distD,distBaixo);
+  distb = distanceSensorDown.measureDistanceCm();
+  distc = distanceSensorUp.measureDistanceCm();
+  distd = distanceSensorRight.measureDistanceCm();
+  diste = distanceSensorLeft.measureDistanceCm();
+  if(distd < diste){
+    //FUI NO BANHEIRO
+    entradaEsquerda();
+  }else{
+    entradaDireita();
+  }
+  acharTriangulo();
 }
 
-  //float distcima = sensorDistance1.measureDistanceCm();
-  //float distbaixo = sensorDistance2.measureDistanceCm();
-//  bool sensfrente = digitalRead(sensFrente);
-  //acharTriangulo(distcima,distbaixo,sensfrente);
+void acharTriangulo(){
+  if(distb >= 70){
+    Serial.println("ACHEI TRIANGULO");
+    while(triangulo()){};
+  }else if(distc - distb > 10){
+    Serial.println("VITIMA");
+    capturarVitima();
+  }
+  else if(distc <10){
+    lado++;
+    Serial.println("PAREDE");
+    parede();
+  }else{
+    drive->frente(100);
+    Serial.println("FRENTE");
+  }
+}
+
+void parede(){
+  drive->freiar();
+  delay(40);
+  drive->tras(100);
+  delay(500);
+  md->frente(128);
+  me->freiar();
+  delay(1700);
+  drive->tras(100);
+  delay(1000);
+}
