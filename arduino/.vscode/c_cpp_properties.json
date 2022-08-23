@@ -16,7 +16,7 @@
             "intelliSenseMode": "gcc-x64",
             "includePath": [
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino",
-                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\variants\\eightanaloginputs"
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\variants\\mega"
             ],
             "forcedInclude": [
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
@@ -26,7 +26,7 @@
             "defines": [
                 "F_CPU=16000000L",
                 "ARDUINO=10819",
-                "ARDUINO_AVR_NANO",
+                "ARDUINO_AVR_MEGA2560",
                 "ARDUINO_ARCH_AVR",
                 "USBCON"
             ]
