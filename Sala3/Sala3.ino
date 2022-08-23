@@ -130,32 +130,125 @@ Motor *me = new Motor(me1,me2,velmotorE, false);
 Driver *drive = new Driver(md,me);
 
 float distb, distc, distd, diste;
-int lado;
+int lado = 1;
 String entrada = ".";
 
-boolean triangulo(){
-  if(lado%2 == 0){
+void irMeio(){
+  // O SIMPLES:
+  drive->tras(128);
+  delay(3000);
+  frente(100);
+  while(dist > 33){}
+  //ACHEI COMPLICADO E PODE NÃO DAR CERTO ENTÃO OPTEI PELO SIMPLES
+  // bool distanciei = false;
+  //   if(distc < 33 && !distanciei){
+  //     drive->frente(100);
+  //     while(distc < 33){}
+  //     distanciei = !distanciei;
+  //   }else if(distc > 33 && !distanciei){
+  //     drive->tras(100);
+  //     while(distc > 33){}
+  //     distanciei = !distanciei
+  //   }
+  //   else{
+  //     drive->freiar();
+  //     delay(50);
+  //     return
+  //   }
+}
 
+boolean triangulo(){
+  irMeio();
+  if(entrada == "direita"){
+    drive->esquerda(100);
+    delay(1500);
+    if(lado%2 == 0){
+      vitima();
+    }else{
+      drive->frente(100);
+      delay(1000);
+      drive->direita(100);
+      delay(1500);
+      drive->tras(100);
+      delay(3000);
+      vitima();
+    }
   }
   else{
-
+    drive->direita(100);
+    delay(1500);
+    if(lado%2 == 0){
+      vitima();
+    }else{
+      drive->frente(100);
+      delay(1000);
+      drive->esquerda(100);
+      delay(1500);
+      drive->tras(100);
+      delay(3000);
+      vitima();
+    }
   }
 }
 
+void vitima(){
+  bool voltar = false;
+  if(distd < 38){
+    drive->direita(100);
+    delay(1500);
+    timer = millis();
+    drive->frente(100);
+    while(distc > 5){}
+    timer2 = millis() - timer;
+    capturarVitima();
+    drive->tras(100);
+    delay(timer2);
+  }
+  else if(diste < 38){
+    drive->esquerda(100);
+    delay(1500);
+    timer = millis();
+    drive->frente(100);
+    while(distc > 5){}
+    timer2 = millis() - timer;
+    capturarVitima();
+    drive->tras(100);
+    delay(timer2);
+  }
+  else{
+    if(distc > 5 && !voltar){
+      drive->frente(80);
+    }else{
+      voltar = true;
+      if(distd >=70 || diste >=70){
+        despejo();
+      }else{
+        drive->tras(80);
+      }
+    }
+  }
+}
+
+void despejo(){
+  if(distd >=70){
+    drive->esquerda(100);
+    delay(1500);
+    drive->tras(100);
+    delay(4000);
+    // DESPEJAR
+  else{
+    drive->direita(100);
+    delay(1500);
+    drive->tras(100);
+    delay(4000);
+    // DESPEJAR
+  }
+}
 void capturarVitima(){
-   drive->tras(100);
-   delay(200);
-   drive->direita(128);
-   delay(500);
-   drive->tras(100);
-   delay(500);
-   int timer = millis();
-   do{
-    drive->frente(100); 
-   }while(distFrente > 3);
-   int timer2 = millis() - timer;
-   drive->tras(128);   
-   delay(timer2);
+  //DESCE GARRA
+  drive->frente(128);
+  delay(3000);
+  //SOBE GARRA
 }
 
 void setup() {
@@ -168,17 +261,16 @@ void loop() {
   distd = distanceSensorRight.measureDistanceCm();
   diste = distanceSensorLeft.measureDistanceCm();
   if(distd < diste){
-    //FUI NO BANHEIRO
-    entradaEsquerda();
+    entrada = "esquerda"
   }else{
-    entradaDireita();
+    entrada = "direita"
   }
   acharTriangulo();
 }
 
 void acharTriangulo(){
   if(distb >= 70){
-    Serial.println("ACHEI TRIANGULO");
+    Serial.println("TRIANGULO");
     while(triangulo()){};
   }else if(distc - distb > 10){
     Serial.println("VITIMA");
@@ -195,12 +287,20 @@ void acharTriangulo(){
 }
 
 void parede(){
+  int velD = 0;
+  int velE = 0;
+  if(entrada == "direita"){
+    velE = 128;
+    velD = 0;
+  }else{
+    velE = 0;
+    velD = 128
+  }
   drive->freiar();
   delay(40);
   drive->tras(100);
   delay(500);
-  md->frente(128);
-  me->freiar();
+  drive->mover(128,0);
   delay(1700);
   drive->tras(100);
   delay(1000);
