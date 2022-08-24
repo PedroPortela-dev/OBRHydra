@@ -1,3 +1,5 @@
+// Inclusão das Bibliotecas
+#include<Wire.h>
 #include <HCSR04.h>
 
 #define sensForaD 8
@@ -8,7 +10,7 @@
 #define BRANCOd 1
 #define PRETOf 1
 #define BRANCOf 0
-#define POWER 70
+int POWER = 70;
 #define POWER1 110
 #define POWER2 100
 #define POWER3 140
@@ -185,7 +187,12 @@ UltraSonicDistanceSensor distanceSensorUp(13, 12);
 UltraSonicDistanceSensor distanceSensorLeft(13, 12);
 UltraSonicDistanceSensor distanceSensorRight(13, 12);
 String corD, corE;
-int distD, distU;
+float distD, distU,distR, distL;
+const int MPU = 0x68;
+float AccX, AccY, AccZ, Temp, GyrX, GyrY, GyrZ, UltimoValorGyrZ, DerivadaGyrZ, MinDerivadaGyrZ, MaxDerivadaGyrZ, MediaGyrZ, MaxMediaGyrZ;
+float ultimosValoresGyrZ[20];
+int i = 0;
+bool Subida = false, Descendo = false, Rampa = false, Sala3 = false;
 
 void setup() {
 
@@ -194,12 +201,19 @@ void setup() {
   pinMode(sensDentroD,INPUT);
   pinMode(sensDentroE,INPUT);
 
+  MPUsetup();
+
   Serial.begin(9600);
 }
 
 void loop() {
- verificacaoSeguidor();
- verificacaoObstaculo();
+  if(Sala3){
+
+  }else{
+    verificacaoSeguidor();
+    verificacaoObstaculo();
+    verificacaoMPU();
+  }
 }
 
 void verificacaoSeguidor(){
@@ -264,6 +278,7 @@ void Chegada(){
 
 void MeiaVolta(){
   drive->direita(POWER);
+  delay(DELAY2+DELAY1);
   while(digitalRead(sensDentroD) != PRETOd){};
 }
 
@@ -359,10 +374,6 @@ void verificacaoObstaculo(){
       Serial.println("Obstaculo");
       obstaculo();
     }
-    else if(distD < 10 && distU < 30){
-      Serial.println("Rampa");
-      // Rampa
-    }
     else if(distD < 10 && distU > 30){
       Serial.println("Kit resgate");
       kitResgate();
@@ -373,6 +384,8 @@ void verificacaoObstaculo(){
 void atualizacaoDist(){
   distD = distanceSensorDown.measureDistanceCm();
   distU = distanceSensorUp.measureDistanceCm();
+  distR = distanceSensorRight.measureDistanceCm();
+  distL = distanceSensorLeft.measureDistanceCm();
 }
 
 void obstaculo()
@@ -402,4 +415,96 @@ void obstaculo()
 
 void kitResgate(){
   
+}
+
+void MPUsetup() {
+  Serial.begin(9600);
+
+  Wire.begin();
+  Wire.beginTransmission(MPU);
+  Wire.write(0x6B);
+  Wire.write(0);
+  Wire.endTransmission(true);
+
+  Wire.beginTransmission(MPU);
+  Wire.write(0x1B);
+  Wire.write(0x00000000);
+  Wire.endTransmission();
+
+  Wire.beginTransmission(MPU);
+  Wire.write(0x1C);
+  Wire.write(0b00000000);
+  Wire.endTransmission();
+}
+
+void MPUloop() {
+  
+  Wire.beginTransmission(MPU);
+  Wire.write(0x3B);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU, 14, true);
+
+  AccX = Wire.read() << 8 | Wire.read();
+  AccY = Wire.read() << 8 | Wire.read();
+  AccZ = Wire.read() << 8 | Wire.read();
+  Temp = Wire.read() << 8 | Wire.read();
+  GyrX = Wire.read() << 8 | Wire.read(); 
+  GyrY = Wire.read() << 8 | Wire.read(); 
+  GyrZ = Wire.read() << 8 | Wire.read(); 
+  AccX /= 16384;
+  AccY /= 16384;
+  AccZ /= 16384;
+  GyrX /= 131;
+  GyrY /= 131;
+  GyrZ /= 131;
+
+  DerivadaGyrZ = UltimoValorGyrZ - GyrZ;
+  UltimoValorGyrZ = GyrZ;
+  
+  MaxDerivadaGyrZ = (DerivadaGyrZ > MaxDerivadaGyrZ)? DerivadaGyrZ:MaxDerivadaGyrZ;
+  MinDerivadaGyrZ = (DerivadaGyrZ < MinDerivadaGyrZ)? DerivadaGyrZ:MinDerivadaGyrZ;
+  if(MaxDerivadaGyrZ > 5000){
+    Subida = true;
+    MaxDerivadaGyrZ = 0; 
+  }
+
+  ultimosValoresGyrZ[i] = GyrZ;
+  if(i < 20){
+    i++;
+  }else{
+    i = 0;
+  }
+
+  for(int j = 0; j < 20; j++){
+    MediaGyrZ += ultimosValoresGyrZ[j];
+  }
+  MediaGyrZ /= 20;
+
+  if(abs(MediaGyrZ) < -10){
+    Descendo = true; 
+  }else{
+    Descendo = false;
+    if(Descendo){
+      Subida = false;
+    }
+  }
+}
+
+void verificacaoMPU(){
+  MPUloop();
+  if(Subida){
+    if(distD < 10 && distL < 10){
+      Rampa = true;
+    }
+    POWER = 150;
+  }
+  else if(Descendo && !Rampa){
+    POWER = 0;
+  }
+  else if(!Subida && Rampa){
+    Sala3 = true;
+  }
+  else{
+    POWER = 70;
+  }
 }
