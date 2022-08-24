@@ -1,22 +1,31 @@
 #include <HCSR04.h>
 
 // PORTA 5 COM DEFEITO
-#define velmotorD 3
-#define md1 4
-#define md2 2
+#define velmotorD 5
+#define md1 6
+#define md2 7
 
-#define velmotorE 13
-#define me1 7
-#define me2 8
+#define velmotorE 4
+#define me1 3
+#define me2 2
 
-// trigger PWM
-#define p_trigger1 24
-#define p_echo1 22
-#define p_trigger2 28
-#define p_echo2 26
-#define p_trigger3 10
-#define p_echo3 11
-#define sensFrente 0
+#define triggerE 31
+#define echoE 33
+#define triggerD 29 
+#define echoD 27
+#define triggerC 35
+#define echoC 37
+#define triggerB 13
+#define echoB 12
+
+#define POWER 70
+#define POWER1 110
+#define POWER2 100
+#define POWER3 140
+#define DELAY 250
+#define DELAY1 500
+#define DELAY2 1700
+#define DELAY3 2000
 
 class Motor{
   public:
@@ -121,118 +130,182 @@ class Driver{
 };
 
 
-UltraSonicDistanceSensor distanceSensorDown(p_trigger2, p_echo2);
-UltraSonicDistanceSensor distanceSensorUp(p_trigger1,p_echo1);
-UltraSonicDistanceSensor distanceSensorLeft(52, 53);
-UltraSonicDistanceSensor distanceSensorRight(p_trigger3, p_echo3);
-Motor *md = new Motor(md1,md2,velmotorD, false);
-Motor *me = new Motor(me1,me2,velmotorE, false);
+UltraSonicDistanceSensor distanceSensorDown(triggerB, echoB);
+UltraSonicDistanceSensor distanceSensorUp(triggerC,echoC);
+UltraSonicDistanceSensor distanceSensorLeft(triggerE, echoE);
+UltraSonicDistanceSensor distanceSensorRight(triggerD, echoD);
+Motor *md = new Motor(md1,md2,velmotorD, 0);
+Motor *me = new Motor(me1,me2,velmotorE, 0);
 Driver *drive = new Driver(md,me);
 
-float distb, distc, distd, diste;
+float distb, distc, distd, diste, distVitima;
 int lado = 1;
 String entrada = ".";
+boolean despejei = false;
+int despejos =0;
 
-void irMeio(){
-  // O SIMPLES:
-  drive->tras(128);
-  delay(3000);
-  frente(100);
-  while(dist > 33){}
-  return;
+void testeIdentificacao(){
+//      esquerda90();
+      do{
+        atualizarDist();
+        vitima();
+      }while(!despejei);
 }
 
-boolean triangulo(){
-  irMeio();
+void triangulo(){
+  if(lado != 1){
+    drive->tras(128);
+    do{
+      atualizarDist();
+      Serial.println("Tras ate a parede");
+    }while(distc < 60);
+  }
   if(entrada == "direita"){
-    drive->esquerda(100);
-    delay(1500);
     if(lado%2 == 0){
-      vitima();
-    }else{
       drive->frente(100);
+      do{
+        atualizarDist();
+        Serial.println("frente ate o meio");
+      }
+      while(distc > 33);
+      esquerda90();
+      do{
+        atualizarDist();
+        vitima();
+      }while(!despejei);
+    //}else{
+      esquerda90();
+      drive->frente(100);
+      do{atualizarDist();}while(distc > 33);
+      direita90();
+      drive->tras(128);
       delay(1000);
-      drive->direita(100);
-      delay(1500);
-      drive->tras(100);
-      delay(3000);
-      vitima();
+      do{
+        atualizarDist();
+        vitima();
+      }while(distc > 5);
     }
   }
   else{
-    drive->direita(100);
-    delay(1500);
     if(lado%2 == 0){
-      vitima();
-    }else{
       drive->frente(100);
+      do{atualizarDist();}while(distc > 33);
+      direita90();
+      do{
+        atualizarDist();
+        vitima();
+      }while(distc > 5);
+    }else{
+      esquerda90();
+      drive->frente(100);
+      do{atualizarDist();}while(distc > 33);
+      esquerda90();
+      drive->tras(128);
       delay(1000);
-      drive->esquerda(100);
-      delay(1500);
-      drive->tras(100);
-      delay(3000);
-      vitima();
+      do{
+        atualizarDist();
+        vitima();
+      }while(distc > 5);
     }
   }
 }
-
+bool voltar = false;
 void vitima(){
-  bool voltar = false;
-  if(distd < 38){
-    drive->direita(100);
-    delay(1500);
-    timer = millis();
+  drive->frente(128);
+  delay(1000);
+  if(distd < 10){
+    Serial.println("Achei vitima na direita");
+    Serial.print("Distancia direita: ");
+    Serial.println(distd);
+    Serial.print("Distancia esquerda: ");
+    Serial.println(diste);
+    drive->freiar();
+    delay(5000);
+    direita90();
+    distVitima = distc;
+    drive->tras(128);
+    delay(1000);
+    //descer garra
     drive->frente(100);
-    while(distc > 5){}
-    timer2 = millis() - timer;
-    capturarVitima();
+    do{atualizarDist();}while(distc > 5);
+    //subir garra
     drive->tras(100);
-    delay(timer2);
+    do{atualizarDist();}while(distc < distVitima);
+    esquerda90();
   }
-  else if(diste < 38){
-    drive->esquerda(100);
-    delay(1500);
-    timer = millis();
-    drive->frente(100);
-    while(distc > 5){}
-    timer2 = millis() - timer;
-    capturarVitima();
+  else if(diste < 10){
+    Serial.print("Distancia direita: ");
+    Serial.println(distd);
+    Serial.print("Distancia esquerda: ");
+    Serial.println(diste);
+    Serial.println("Achei vitima na esquerda");
+    drive->freiar();
+    delay(5000);
+    esquerda90();
+    distVitima = distc;
     drive->tras(100);
-    delay(timer2);
+    delay(1000);
+    //descer garra
+    drive->frente(100);
+    do{atualizarDist();}while(distc > 5);
+    //subir garra
+    drive->tras(100);
+    do{atualizarDist();}while(distc < distVitima);
+    direita90();
   }
   else{
+    atualizarDist();
     if(distc > 5 && !voltar){
-      drive->frente(80);
+      Serial.println("FRENTE, buscando vitima");
+      do{
+        atualizarDist();
+        drive->frente(100);  
+      }while(distc > 8);
     }else{
       voltar = true;
       if(distd >=70 || diste >=70){
+        delay(200);
+        Serial.println("Despejo");
+        Serial.print("Distancia direita: ");
+        Serial.println(distd);
+        Serial.print("Distancia esquerda: ");
+        Serial.println(diste);
+        delay(5000);
         despejo();
       }else{
-        drive->tras(80);
+        Serial.println("TRAS voltando pro triangulo e identificando");
+        do{
+          atualizarDist();
+          drive->tras(100);  
+        }while(distd <70 && diste <70);
       }
     }
   }
+  Serial.print("Sensor esquerda: ");
+  Serial.println(diste);
+  Serial.print("Sensor direita: ");
+  Serial.println(distd);
+  
 }
 
 void despejo(){
   if(distd >=70){
-    drive->esquerda(100);
-    delay(1500);
-    drive->tras(100);
-    delay(4000);
+    esquerda90();
+    drive->tras(128);
+    delay(2000);
     // DESPEJAR
   }else{
-    drive->direita(100);
-    delay(1500);
+    direita90();
     drive->tras(100);
-    delay(4000);
+    delay(2000);
     // DESPEJAR
+    despejei = true;
+    despejos++;
   }
 }
 
 
 void capturarVitima(){
-  //DESCE GARRA
   drive->frente(128);
   delay(3000);
   //SOBE GARRA
@@ -240,56 +313,91 @@ void capturarVitima(){
 
 
 void acharTriangulo(){
-  if(distb >= 70){
-    Serial.println("TRIANGULO");
-    while(triangulo()){};
-  }else if(distc - distb > 10){
-    Serial.println("VITIMA");
-    capturarVitima();
-  }
-  else if(distc <10){
-    lado++;
-    Serial.println("PAREDE");
-    parede();
-  }else{
-    drive->frente(100);
-    Serial.println("FRENTE");
-  }
+  triangulo();
+//  if(distb >= 70){
+//    Serial.println("TRIANGULO");
+//    triangulo();
+////    drive->freiar();
+////    delay(5000);
+//  }else if(distc - distb > 10){
+//    Serial.println("VITIMA");
+//    // capturarVitima();
+//  }
+//  else if(distc <10){
+//    lado++;
+//    Serial.println("PAREDE");
+//    Serial.println(entrada);
+//    parede();
+//  }else{
+//    drive->frente(180);
+//    Serial.println("FRENTE");
+//  }
 }
 
 void parede(){
-  int velD = 0;
-  int velE = 0;
+  int velD;
+  int velE;
   if(entrada == "direita"){
-    velE = 128;
+    velE = 150;
     velD = 0;
+    esquerda90();
   }else{
+    direita90();
     velE = 0;
-    velD = 128
+    velD = 150;
   }
-  drive->freiar();
-  delay(40);
-  drive->tras(100);
-  delay(500);
-  drive->mover(128,0);
-  delay(1700);
-  drive->tras(100);
-  delay(1000);
+//  drive->freiar();
+//  delay(40);
+//  drive->tras(128);
+//  delay(500);
+//  drive->mover(velD,velE);
+//  delay(1000);
+//  drive->tras(100);
+//  delay(800);
 }
 
 void setup() {
   Serial.begin(9600);
 }
 
-void loop() {
+void direita90(){
+  drive->direita(110);
+  delay(1300);
+}
+
+void esquerda90(){
+  drive->esquerda(110);
+  delay(1300);
+}
+
+bool entrei = false;
+int comecar = 0;
+void loop() { 
+  atualizarDist();
+  if(distd < diste && !entrei && diste != -1 && distd != -1){
+    entrada ="direita";
+    entrei = true;
+  }else if(!entrei && diste != -1 && distd != -1){
+    entrada = "esquerda";
+    entrei = true;
+  }
+//  acharTriangulo();
+  if(comecar > 10){
+    Serial.println("comecei");
+    testeIdentificacao();  
+  }else{
+     if (Serial.available() > 0) {
+      // lê do buffer o dado recebido:
+     Serial.println("Comecar o codigo: 0 ou 1");
+     comecar = Serial.read();
+     Serial.println(comecar,DEC);
+     }
+  }
+}
+
+void atualizarDist(){
   distb = distanceSensorDown.measureDistanceCm();
   distc = distanceSensorUp.measureDistanceCm();
   distd = distanceSensorRight.measureDistanceCm();
   diste = distanceSensorLeft.measureDistanceCm();
-  if(distd < diste){
-    entrada = "esquerda"
-  }else{
-    entrada = "direita"
-  }
-  acharTriangulo();
 }
