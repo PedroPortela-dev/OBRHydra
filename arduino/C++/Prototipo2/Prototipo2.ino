@@ -2,30 +2,28 @@
 #include<Wire.h>
 #include <HCSR04.h>
 
-#define sensForaD 8
-#define sensForaE 11
-#define sensDentroD 9
-#define sensDentroE 10
-#define PRETOd 0
-#define BRANCOd 1
-#define PRETOf 1
-#define BRANCOf 0
+#define sensForaD !digitalRead(8)
+#define sensForaE !digitalRead(10)
+#define sensDentroD digitalRead(9)
+#define sensDentroE digitalRead(11)
+#define PRETO 1
+#define BRANCO 0
 int POWER = 70;
-#define POWER1 110
-#define POWER2 100
-#define POWER3 140
-#define DELAY 250
+#define POWER1 200
+#define POWER2 120
+#define POWER3 150
+#define DELAY 200
 #define DELAY1 500
 #define DELAY2 1700
-#define DELAY3 2000
 
 class Motor{
   public:
-    Motor(int p1, int p2, int v, bool forward){
+    Motor(int v, int p1, int p2, bool forward, int pExtra = 0){
       this->p1=p1;
       this->p2=p2;
       this->pv=v;
       this->forward=forward;
+      this->pExtra = pExtra;
       pinMode(p1,OUTPUT);
       pinMode(p2,OUTPUT);
       pinMode(pv,OUTPUT);
@@ -34,6 +32,7 @@ class Motor{
       digitalWrite(pv,0);
     }
     void frente(int v){
+      v+= pExtra;
       if(forward){
         digitalWrite(p1,LOW);
         digitalWrite(p2,HIGH);
@@ -45,6 +44,7 @@ class Motor{
       }
     }
     void tras(int v){
+      v+= pExtra;
       if(forward){
         digitalWrite(p1,HIGH);
         digitalWrite(p2,LOW);
@@ -66,6 +66,7 @@ class Motor{
       analogWrite(pv,255);
     }
     void mover(int vel){
+      vel+= pExtra;
       if(vel > 0){
         frente(vel);
       }
@@ -77,7 +78,7 @@ class Motor{
       }
     }
   private:
-    int p1,p2,pv;
+    int p1,p2,pv, pExtra;
     bool forward;
 };
 
@@ -114,6 +115,14 @@ class Driver{
     void freiar(){
       mD->freiar();
       mE->freiar();      
+    }
+    void direita90(){
+      direita(POWER); //Giro a Direita
+      delay(DELAY1);
+    }
+    void esquerda90(){
+      esquerda(POWER); //Giro a Direita
+      delay(DELAY1);
     }
   private:
     Motor *mD;
@@ -177,17 +186,19 @@ class SensorCor{
 
 unsigned long timer;
 
-Motor *md = new Motor(3,4,2, false);
-Motor *me = new Motor(6,7,5, false);
+Motor *md = new Motor(2,3,4, false);
+Motor *me = new Motor(5,6,7, false, 35);
+Motor *coleta = new Motor(A15, A14, A13, false);
 Driver *drive = new Driver(md,me);
 SensorCor *SensorCorD = new SensorCor(53, 51, 49);
 SensorCor *SensorCorE = new SensorCor(52, 50, 48);
-UltraSonicDistanceSensor distanceSensorDown(13, 12);
-UltraSonicDistanceSensor distanceSensorUp(13, 12);
-UltraSonicDistanceSensor distanceSensorLeft(13, 12);
-UltraSonicDistanceSensor distanceSensorRight(13, 12);
+UltraSonicDistanceSensor distanceSensorDown(A12, A11);
+UltraSonicDistanceSensor distanceSensorUp(A6, A5);
+UltraSonicDistanceSensor distanceSensorLeft(A10, A9);
+UltraSonicDistanceSensor distanceSensorRight(A8, A7);
 String corD, corE;
-float distD, distU,distR, distL;
+float distB, distC,distD, distE;
+
 const int MPU = 0x68;
 float AccX, AccY, AccZ, Temp, GyrX, GyrY, GyrZ, UltimoValorGyrZ, DerivadaGyrZ, MinDerivadaGyrZ, MaxDerivadaGyrZ, MediaGyrZ, MaxMediaGyrZ;
 float ultimosValoresGyrZ[20];
@@ -207,11 +218,20 @@ void setup() {
 }
 
 void loop() {
+  // Serial.print("Direita: ");
+  // Serial.println(sensDentroD);
+  // Serial.print("Esquerda: ");
+  // Serial.println(sensDentroE);
+  // drive->frente(POWER);
+  // if(sensDentroE == PRETO){
+  //   drive->freiar();
+  //   delay(5000);
+  // }
   if(Sala3){
-
+    loopSala3();
   }else{
     verificacaoSeguidor();
-    verificacaoObstaculo();
+    // verificacaoObstaculo();
     verificacaoMPU();
   }
 }
@@ -236,31 +256,38 @@ void verificacaoSeguidor(){
 //    Serial.println("EsqVerde");
 //    EsquerdaVerde();
 //  } else 
-  if(digitalRead(sensForaE)==PRETOf && digitalRead(sensForaD)==PRETOf){
-    Serial.println("Cruz");
-    Cruz();
-  }
-  if(digitalRead(sensForaE)==PRETOf && digitalRead(sensForaD)==BRANCOf){
-    Serial.println("EstForaE");
-    EsquerdaLonga();
-  }
-  else if(digitalRead(sensForaE)==BRANCOf && digitalRead(sensForaD)==PRETOf){
-    Serial.println("EstForaD");
-    DireitaLonga();
-  }
-  else if (digitalRead(sensDentroE)==BRANCOd && digitalRead(sensDentroD)==PRETOd){ 
+  // if(sensForaE==PRETO && sensForaD==PRETO){
+  //   Serial.println("Cruz");
+  //   // drive->freiar();
+  //   // delay(5000);
+  //   Cruz();
+  // }
+  // else if(sensForaE==PRETO && sensForaD==BRANCO){
+  //   Serial.println("EstForaE");
+  //   // drive->freiar();
+  //   // delay(5000);
+  //   EsquerdaLonga();
+  // }
+  // else if(sensForaE==BRANCO && sensForaD==PRETO){
+  //   Serial.println("EstForaD");
+  //   // drive->freiar();
+  //   // delay(5000);
+  //   DireitaLonga();
+  // }
+  // else 
+  if (sensDentroE==BRANCO && sensDentroD==PRETO){ 
     Serial.println("Dir");
     Direita();
   }
-  else if (digitalRead(sensDentroE)==PRETOd && digitalRead(sensDentroD)==BRANCOd){
+  else if (sensDentroE==PRETO && sensDentroD==BRANCO){
     Serial.println("Esq");
     Esquerda();  
   }
-  else if (digitalRead(sensDentroE)==BRANCOd && digitalRead(sensDentroD)==BRANCOd){
+  else if (sensDentroE==BRANCO && sensDentroD==BRANCO){
     Serial.println("Frente");
     Frente();
   }
-  else if (digitalRead(sensDentroE)==PRETOd && digitalRead(sensDentroD)==PRETOd){
+  else if (sensDentroE==PRETO && sensDentroD==PRETO){
     Serial.println("Frente");
     Frente();
   }
@@ -279,7 +306,7 @@ void Chegada(){
 void MeiaVolta(){
   drive->direita(POWER);
   delay(DELAY2+DELAY1);
-  while(digitalRead(sensDentroD) != PRETOd){};
+  while(sensDentroD != PRETO){};
 }
 
 void DireitaVerde(){
@@ -296,7 +323,7 @@ void DireitaVerde(){
  
  drive->direita(POWER);
  delay(DELAY);
- while(digitalRead(sensDentroD) != PRETOd){};
+ while(sensDentroD != PRETO){};
  
 }
 
@@ -314,7 +341,7 @@ void EsquerdaVerde(){
  
  drive->esquerda(POWER);
  delay(DELAY);
- while(digitalRead(sensDentroE) != PRETOd){};
+ while(sensDentroE != PRETO){};
  
 
 }
@@ -326,31 +353,31 @@ void Cruz(){
 
 void DireitaLonga(){
   
-  drive->frente(POWER);
-  delay(DELAY);
+  // drive->frente(POWER);
+  // delay(DELAY);
   
-  drive->mover(-POWER2, POWER1);
-  while(digitalRead(sensDentroE) != PRETOd){
-    if(digitalRead(sensForaE)==PRETOf){
-      drive->mover(POWER1,-POWER2);
-      while(digitalRead(sensDentroD) != PRETOd){};
-      return;
-    }
+  drive->mover(-POWER2, POWER3);
+  while(sensDentroE != PRETO){
+    // if(sensForaE==PRETO){
+    //   drive->mover(POWER1,-POWER2);
+    //   while(sensDentroD != PRETO){};
+    //   return;
+    // }
   }
 }
 
 void EsquerdaLonga(){
   
-  drive->frente(POWER);
-  delay(DELAY);
+  // drive->frente(POWER);
+  // delay(DELAY);
   
-  drive->mover(POWER1,-POWER2);
-  while(digitalRead(sensDentroD) != PRETOd){
-    if(digitalRead(sensForaD)==PRETOf){ 
-      drive->mover(-POWER2,POWER1);
-      while(digitalRead(sensDentroE) != PRETOd){};
-      return;
-    }
+  drive->mover(POWER3,-POWER2);
+  while(sensDentroD != PRETO){
+    // if(sensForaD==PRETO){ 
+    //   drive->mover(-POWER2,POWER1);
+    //   while(sensDentroE != PRETO){};
+    //   return;
+    // }
   }
 }
 
@@ -369,12 +396,12 @@ void Frente(){
 void verificacaoObstaculo(){
 
   atualizacaoDist();
-  if(distD > 0 && distU > 0){
-    if(distD < 10 && distU < 10){
+  if(distD > 0 && distC > 0){
+    if(distD < 10 && distC < 10){
       Serial.println("Obstaculo");
       obstaculo();
     }
-    else if(distD < 10 && distU > 30){
+    else if(distD < 10 && distC > 30){
       Serial.println("Kit resgate");
       kitResgate();
     }
@@ -382,39 +409,46 @@ void verificacaoObstaculo(){
 }
 
 void atualizacaoDist(){
-  distD = distanceSensorDown.measureDistanceCm();
-  distU = distanceSensorUp.measureDistanceCm();
-  distR = distanceSensorRight.measureDistanceCm();
-  distL = distanceSensorLeft.measureDistanceCm();
+  distD = distanceSensorRight.measureDistanceCm();
+  distC = distanceSensorUp.measureDistanceCm();
+  distB = distanceSensorDown.measureDistanceCm();
+  distE = distanceSensorLeft.measureDistanceCm();
 }
 
 void obstaculo()
 {
-  drive->direita(POWER); //Giro a Direita
-  delay(DELAY1);
+  
+  drive->direita90();
 
   drive->frente(POWER); //Frente
-  delay(DELAY2);
+  do{atualizacaoDist();} while (distE > 20 || distE == -1);
+  do{atualizacaoDist();} while (distE <= 20 && distE != -1);
 
-  drive->esquerda(POWER); //Giro a Esquerda
-  delay(DELAY1);
-
-  drive->frente(POWER); //Frente
-  delay(DELAY3);
-
-  drive->esquerda(POWER); //Giro a Esquerda
-  delay(DELAY1);
+  drive->esquerda90();
 
   drive->frente(POWER); //Frente
-  while (digitalRead(sensDentroD) == BRANCOd || digitalRead(sensDentroE) == BRANCOd || digitalRead(sensForaD) == BRANCOf || digitalRead(sensForaE) == BRANCOf){}  
+  do{atualizacaoDist();} while (distE > 20 || distE == -1);
+  do{atualizacaoDist();} while (distE <= 20 && distE != -1);
+
+  drive->esquerda90(); //Giro a Esquerda
+
+  drive->frente(POWER); //Frente
+  while (sensDentroD == BRANCO || sensDentroE == BRANCO || sensForaD == BRANCO || sensForaE == BRANCO){}  
   delay(DELAY);
 
   drive->direita(POWER); //Giro a Direita
-  while(digitalRead(sensDentroE)== BRANCOd){}
+  while(sensDentroE== BRANCO){}
 }
 
 void kitResgate(){
-  
+  //baixar garra
+  drive->frente(POWER); //Frente
+  delay(DELAY1);
+  //subir garra
+  drive->tras(POWER); //Frente
+  delay(DELAY1);
+
+
 }
 
 void MPUsetup() {
@@ -493,7 +527,7 @@ void MPUloop() {
 void verificacaoMPU(){
   MPUloop();
   if(Subida){
-    if(distD < 10 && distL < 10){
+    if(distD < 10 && distE < 10){
       Rampa = true;
     }
     POWER = 150;
@@ -507,4 +541,276 @@ void verificacaoMPU(){
   else{
     POWER = 70;
   }
+}
+
+float distVitima;
+int lado = 1;
+String entrada = ".";
+boolean despejei = false;
+int despejos =0;
+bool voltar = false;
+float distparedeD = 0;
+float distparedeE = 0;
+bool entrei = false;
+int comecar = 0;
+
+void testeIdentificacao(){
+//      esquerda90();
+      do{
+        atualizarDist();
+        vitima();
+      }while(!despejei);
+}
+
+void triangulo(){
+  if(lado != 1){
+    drive->tras(128);
+    do{
+      atualizarDist();
+      Serial.println("Tras ate a parede");
+    }while(distC < 60);
+  }
+  if(entrada == "direita"){
+    if(lado%2 == 0){
+      drive->frente(100);
+      do{
+        atualizarDist();
+        Serial.println("frente ate o meio");
+      }
+      while(distC > 33);
+      esquerda90();
+      do{
+        atualizarDist();
+        vitima();
+      }while(!despejei);
+    //}else{
+      esquerda90();
+      drive->frente(100);
+      do{atualizarDist();}while(distC > 33);
+      direita90();
+      drive->tras(128);
+      delay(1000);
+      do{
+        atualizarDist();
+        vitima();
+      }while(distC > 5);
+    }
+  }
+  else{
+    if(lado%2 == 0){
+      drive->frente(100);
+      do{atualizarDist();}while(distC > 33);
+      direita90();
+      do{
+        atualizarDist();
+        vitima();
+      }while(distC > 5);
+    }else{
+      esquerda90();
+      drive->frente(100);
+      do{atualizarDist();}while(distC > 33);
+      esquerda90();
+      drive->tras(128);
+      delay(1000);
+      do{
+        atualizarDist();
+        vitima();
+      }while(distC > 5);
+    }
+  }
+}
+
+void vitima(){
+  if(distD >36 && distD <60){
+    distparedeD = distD;
+  }
+  if(distE >38 && distE <60){
+    distparedeE = distE;
+  }
+  if(distparedeD - distD > 4){
+    Serial.println("Achei vitima na direita");
+    Serial.print("Distancia direita: ");
+    Serial.println(distD);
+    Serial.print("Distancia esquerda: ");
+    Serial.println(distE);
+    drive->freiar();
+    delay(5000);
+    direita90();
+    distVitima = distC;
+    drive->tras(1);
+    delay(1000);
+    //descer garra
+    drive->frente(100);
+    do{atualizarDist();}while(distC > 5);
+    //subir garra
+    drive->tras(100);
+    do{atualizarDist();}while(distC < distVitima);
+    esquerda90();
+  }
+  else if(distparedeE - distE > 4){
+    Serial.print("Distancia direita: ");
+    Serial.println(distD);
+    Serial.print("Distancia esquerda: ");
+    Serial.println(distE);
+    Serial.println("Achei vitima na esquerda");
+    drive->freiar();
+    delay(5000);
+    esquerda90();
+    distVitima = distC;
+    drive->tras(100);
+    delay(1000);
+    //descer garra
+    drive->frente(100);
+    do{atualizarDist();}while(distC > 5);
+    //subir garra
+    drive->tras(100);
+    do{atualizarDist();}while(distC < distVitima);
+    direita90();
+  }
+  else{
+    atualizarDist();
+    if(distC > 5 && !voltar){
+      Serial.println("FRENTE, buscando vitima");
+      drive->frente(100);  
+    }else{
+      voltar = true;
+      if(distD >=70 || distE >=70){
+        delay(200);
+        Serial.println("Despejo");
+        Serial.print("Distancia direita: ");
+        Serial.println(distD);
+        Serial.print("Distancia esquerda: ");
+        Serial.println(distE);
+        drive->freiar();
+        delay(5000);
+        despejo();
+      }else{
+        Serial.println("TRAS voltando pro triangulo e identificando");
+        atualizarDist();
+        drive->tras(100);         
+      }
+    }
+  }
+  Serial.print("Sensor esquerda: ");
+  Serial.println(distE);
+  Serial.print("Sensor direita: ");
+  Serial.println(distD);
+  
+}
+
+void despejo(){
+  if(distD >=70){
+    esquerda90();
+    drive->tras(128);
+    delay(2000);
+    // DESPEJAR
+  }else{
+    direita90();
+    drive->tras(100);
+    delay(2000);
+    // DESPEJAR
+    despejei = true;
+    despejos++;
+  }
+}
+
+void capturarVitima(){
+  drive->frente(128);
+  delay(3000);
+  //SOBE GARRA
+}
+
+void acharTriangulo(){
+ if(distB >= 70){
+   Serial.println("TRIANGULO");
+   triangulo();
+//    drive->freiar();
+//    delay(5000);
+ }else if(distC - distB > 10){
+   Serial.println("VITIMA");
+   // capturarVitima();
+ }
+ else if(distC <10){
+   lado++;
+   Serial.println("PAREDE");
+   Serial.println(entrada);
+   parede();
+ }else{
+   drive->frente(180);
+   Serial.println("FRENTE");
+ }
+}
+
+void parede(){
+  int velD;
+  int velE;
+  if(entrada == "direita"){
+    velE = 150;
+    velD = 0;
+    esquerda90();
+  }else{
+    direita90();
+    velE = 0;
+    velD = 150;
+  }
+//  drive->freiar();
+//  delay(40);
+//  drive->tras(128);
+//  delay(500);
+//  drive->mover(velD,velE);
+//  delay(1000);
+//  drive->tras(100);
+//  delay(800);
+}
+
+void direita90(){
+  drive->direita(110);
+  delay(1300);
+}
+
+void esquerda90(){
+  drive->esquerda(110);
+  delay(1300);
+}
+
+void loopSala3() { 
+  atualizarDist();
+//  printDist();
+//  delay(1000);
+//  if(distD < distE && !entrei && distE != -1 && distD != -1){
+//    entrada ="direita";
+//    entrei = true;
+//  }else if(!entrei && distE != -1 && distD != -1){
+//    entrada = "esquerda";
+//    entrei = true;
+//  }
+////  acharTriangulo();
+  if(comecar > 10){
+    testeIdentificacao();  
+  }else{
+     if (Serial.available() > 0) {
+      // lê do buffer o dado recebido:
+     Serial.println("Comecar o codigo: 0 ou 1");
+     comecar = Serial.read();
+     Serial.println(comecar,DEC);
+     }
+  }
+}
+
+void atualizarDist(){
+  distB = distanceSensorDown.measureDistanceCm();
+  distC = distanceSensorUp.measureDistanceCm();
+  distD = distanceSensorRight.measureDistanceCm();
+  distE = distanceSensorLeft.measureDistanceCm();
+}
+
+void printDist(){
+  Serial.print("Distancia cima: ");
+  Serial.println(distC);
+  Serial.print("Distancia baixo: ");
+  Serial.println(distB);
+  Serial.println("Distancia direita: ");
+  Serial.println(distD);
+  Serial.println("Distancia esquerda: ");
+  Serial.println(distE);
 }
