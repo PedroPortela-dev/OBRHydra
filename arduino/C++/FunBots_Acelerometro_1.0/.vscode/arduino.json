@@ -1,5 +1,6 @@
 {
-    "configuration": "cpu=atmega2560",
-    "board": "arduino:avr:mega",
-    "sketch": "FunBots_Acelerometro_1.0.ino"
+    "configuration": "cpu=atmega328",
+    "board": "arduino:avr:nano",
+    "sketch": "FunBots_Acelerometro_1.0.ino",
+    "port": "COM5"
 }
