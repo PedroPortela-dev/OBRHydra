@@ -1,5 +1,6 @@
 // Inclusão das Bibliotecas
 #include<Wire.h>
+#include<math.h>
 
 const int MPU = 0x68;
 
@@ -7,7 +8,7 @@ float AccX, AccY, AccZ, Temp, GyrX, GyrY, GyrZ;
 float AccX_Media, AccY_Media, AccZ_Media,  GyrX_Media, GyrY_Media, GyrZ_Media;
 float VlcX, VlcY, VlcZ, AngX, AngY, AngZ, distX, distY, distZ;
 
-unsigned long timer, i;
+unsigned long timer, i, DeltaT;
 
 void setup() {
   Serial.begin(9600);
@@ -43,11 +44,10 @@ void setup() {
   Wire.write(0b00000000);  // Trocar esse comando para fundo de escala desejado conforme acima
   Wire.endTransmission();
 
-  pinMode(LED_BUILTIN, OUTPUT);
+  timer = micros();
+  DeltaT = (micros()-timer)/(double)1000000;
 
-  for (size_t i = 0; i < 2000; i++)
-  {
-    if(i%125 == 0) Serial.print(".");
+  do{
     // Comandos para iniciar transmissão de dados
     Wire.beginTransmission(MPU);
     Wire.write(0x3B);
@@ -70,19 +70,23 @@ void setup() {
     GyrY_Media+=GyrY;
     GyrZ_Media+=GyrZ;
 
-    delay(3);
-  }
-  AccX_Media/=2000;
-  AccY_Media/=2000;
-  AccZ_Media/=2000;
-  GyrX_Media/=2000;
-  GyrY_Media/=2000;
-  GyrZ_Media/=2000;
+    i++;
+  }while(DeltaT < 5);
+
+  AccX_Media/=i;
+  AccY_Media/=i;
+  AccZ_Media/=i;
+  GyrX_Media/=i;
+  GyrY_Media/=i;
+  GyrZ_Media/=i;
 
   timer = micros();
 }
 
 void loop() {
+
+  DeltaT = (micros()-timer)/(double)1000000;
+  
   // Comandos para iniciar transmissão de dados
   Wire.beginTransmission(MPU);
   Wire.write(0x3B);
@@ -124,48 +128,46 @@ void loop() {
   AccY /= 16384;
   AccZ /= 16384;
 
+  AccX *= 9.8;
+  AccY *= 9.8;
+  AccZ *= 9.8;
+
   GyrX /= 131;
   GyrY /= 131;
   GyrZ /= 131;
 
-  AccX *= (micros()-timer)/(float)1000000;
-  AccY *= (micros()-timer)/(float)1000000;
-  AccZ *= (micros()-timer)/(float)1000000;
+//  distX += VlcX*DeltaT + AccX*pow(DeltaT, 2)/2;
+//  distY += VlcY*DeltaT + AccX*pow(DeltaT, 2)/2;
+//  distZ += VlcZ*DeltaT + AccX*pow(DeltaT, 2)/2;
 
-  GyrX *= (micros()-timer)/(float)1000000;
-  GyrY *= (micros()-timer)/(float)1000000;
-  GyrZ *= (micros()-timer)/(float)1000000;
+  VlcX += AccX*DeltaT;
+  VlcY += AccY*DeltaT;
+  VlcZ += AccZ*DeltaT;
 
-  VlcX += AccX;
-  VlcY += AccY;
-  VlcZ += AccZ;
-  AngX += GyrX;
-  AngY += GyrY;
-  AngZ += GyrZ;
-
-  distX += VlcX*(micros()-timer)/(float)1000000;
-  distY += VlcY*(micros()-timer)/(float)1000000;
-  distZ += VlcZ*(micros()-timer)/(float)1000000;
+  AngX += GyrX*DeltaT;
+  AngY += GyrY*DeltaT;
+  AngZ += GyrZ*DeltaT;
 
   timer = micros();
   
   Serial.print("AngX:");
   Serial.print(AngX);
-  Serial.print("º\t");
+  Serial.print("\t");
   Serial.print("AngY:");
   Serial.print(AngY);
-  Serial.print("º\t");
+  Serial.print("\t");
   Serial.print("AngZ:");
   Serial.print(AngZ);
-  Serial.print("º\t");
+  Serial.print("\t");
 
-  Serial.print("distX:");
-  Serial.print(distX);
-  Serial.print("º\t");
-  Serial.print("distY:");
-  Serial.print(distY);
-  Serial.print("º\t");
-  Serial.print("distZ:");
-  Serial.print(distZ);
-  Serial.print("º\n");
+  Serial.print("VlcX:");
+  Serial.print(VlcX);
+  Serial.print("\t");
+  Serial.print("VlcY:");
+  Serial.print(VlcY);
+  Serial.print("\t");
+  Serial.print("VlcZ:");
+  Serial.print(VlcZ);
+  
+  Serial.println();
 }
