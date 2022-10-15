@@ -2,13 +2,17 @@
 #include<Wire.h>
 #include<math.h>
 
+#define g 9.80665;
+
 const int MPU = 0x68;
 
-float AccX, AccY, AccZ, Temp, GyrX, GyrY, GyrZ;
-float AccX_Media, AccY_Media, AccZ_Media,  GyrX_Media, GyrY_Media, GyrZ_Media;
-float VlcX, VlcY, VlcZ, AngX, AngY, AngZ, distX, distY, distZ;
+double AccX, AccY, AccZ, Temp, GyrX, GyrY, GyrZ;
+double AccX_Media, AccY_Media, AccZ_Media,  GyrX_Media, GyrY_Media, GyrZ_Media;
+double VlcX, VlcY, VlcZ, AngX, AngY, AngZ, distX, distY, distZ;
+double deltat;
+double maxGyrX, maxGyrY, maxGyrZ, maxAccX, maxAccY, maxAccZ;
 
-unsigned long timer, i, DeltaT;
+unsigned long timer, i;
 
 void setup() {
   Serial.begin(9600);
@@ -29,7 +33,7 @@ void setup() {
   */
   Wire.beginTransmission(MPU);
   Wire.write(0x1B);
-  Wire.write(0b00000000);  // Trocar esse comando para fundo de escala desejado conforme acima
+  Wire.write(0b00010000);  // Trocar esse comando para fundo de escala desejado conforme acima
   Wire.endTransmission();
 
   // Configura Acelerometro para fundo de escala desejado
@@ -41,11 +45,10 @@ void setup() {
   */
   Wire.beginTransmission(MPU);
   Wire.write(0x1C);
-  Wire.write(0b00000000);  // Trocar esse comando para fundo de escala desejado conforme acima
+  Wire.write(0b00001000);  // Trocar esse comando para fundo de escala desejado conforme acima
   Wire.endTransmission();
 
   timer = micros();
-  DeltaT = (micros()-timer)/(double)1000000;
 
   do{
     // Comandos para iniciar transmissão de dados
@@ -71,7 +74,10 @@ void setup() {
     GyrZ_Media+=GyrZ;
 
     i++;
-  }while(DeltaT < 5);
+    
+    deltat = (micros()-timer)/(double)1000000;
+    Serial.println(deltat);
+  }while(deltat < 3);
 
   AccX_Media/=i;
   AccY_Media/=i;
@@ -84,8 +90,6 @@ void setup() {
 }
 
 void loop() {
-
-  DeltaT = (micros()-timer)/(double)1000000;
   
   // Comandos para iniciar transmissão de dados
   Wire.beginTransmission(MPU);
@@ -124,50 +128,114 @@ void loop() {
       +/-2000°/s = 16.4
   */
 
-  AccX /= 16384;
-  AccY /= 16384;
-  AccZ /= 16384;
+  AccX = map(AccX, -32767.0, 32768.0, -4.0, 4.0);
+  AccY = map(AccY, -32767.0, 32768.0, -4.0, 4.0);
+  AccZ = map(AccZ, -32767.0, 32768.0, -4.0, 4.0);
 
-  AccX *= 9.8;
-  AccY *= 9.8;
-  AccZ *= 9.8;
+  AccX *= g;
+  AccY *= g;
+  AccZ *= g;
 
-  GyrX /= 131;
-  GyrY /= 131;
-  GyrZ /= 131;
+  GyrX = map(GyrX, -32767.0, 32768.0, -1000.0, 1000.0);
+  GyrY = map(GyrY, -32767.0, 32768.0, -1000.0, 1000.0);
+  GyrZ = map(GyrZ, -32767.0, 32768.0, -1000.0, 1000.0);
 
-//  distX += VlcX*DeltaT + AccX*pow(DeltaT, 2)/2;
-//  distY += VlcY*DeltaT + AccX*pow(DeltaT, 2)/2;
-//  distZ += VlcZ*DeltaT + AccX*pow(DeltaT, 2)/2;
+  deltat = (micros()-timer)/1000000.0;
 
-  VlcX += AccX*DeltaT;
-  VlcY += AccY*DeltaT;
-  VlcZ += AccZ*DeltaT;
+  distX += VlcX*deltat + AccX*pow(deltat, 2)/2;
+  distY += VlcY*deltat + AccX*pow(deltat, 2)/2;
+  distZ += VlcZ*deltat + AccX*pow(deltat, 2)/2;
 
-  AngX += GyrX*DeltaT;
-  AngY += GyrY*DeltaT;
-  AngZ += GyrZ*DeltaT;
+  VlcX += AccX*deltat;
+  VlcY += AccY*deltat;
+  VlcZ += AccZ*deltat;
+
+  AngX += GyrX*deltat;
+  AngY += GyrY*deltat;
+  AngZ += GyrZ*deltat;
+
+  maxGyrX = max(maxGyrX, GyrX);
+  maxGyrY = max(maxGyrY, GyrY);
+  maxGyrZ = max(maxGyrZ, GyrZ);
+  maxAccX = max(maxAccX, AccX);
+  maxAccY = max(maxAccY, AccY);
+  maxAccZ = max(maxAccZ, AccZ);
 
   timer = micros();
-  
-  Serial.print("AngX:");
-  Serial.print(AngX);
-  Serial.print("\t");
-  Serial.print("AngY:");
-  Serial.print(AngY);
-  Serial.print("\t");
-  Serial.print("AngZ:");
-  Serial.print(AngZ);
-  Serial.print("\t");
 
-  Serial.print("VlcX:");
-  Serial.print(VlcX);
-  Serial.print("\t");
-  Serial.print("VlcY:");
-  Serial.print(VlcY);
-  Serial.print("\t");
-  Serial.print("VlcZ:");
-  Serial.print(VlcZ);
-  
+//  Serial.print("AccX:");
+//  Serial.print(AccX);
+//  Serial.print("\t");
+//  Serial.print("AccY:");
+//  Serial.print(AccY);
+//  Serial.print("\t");
+//  Serial.print("AccZ:");
+//  Serial.print(AccZ);
+//  Serial.print("\t");
+//
+//  Serial.print("GyrX:");
+//  Serial.print(GyrX);
+//  Serial.print("\t");
+//  Serial.print("GyrY:");
+//  Serial.print(GyrY);
+//  Serial.print("\t");
+//  Serial.print("GyrZ:");
+//  Serial.print(GyrZ);
+//  Serial.print("\t");
+
+//  Serial.print("AngX:");
+//  Serial.print(AngX);
+//  Serial.print("\t");
+//  Serial.print("AngY:");
+//  Serial.print(AngY);
+//  Serial.print("\t");
+//  Serial.print("AngZ:");
+//  Serial.print(AngZ);
+//  Serial.print("\t");
+//
+//  Serial.print("VlcX:");
+//  Serial.print(VlcX);
+//  Serial.print("\t");
+//  Serial.print("VlcY:");
+//  Serial.print(VlcY);
+//  Serial.print("\t");
+//  Serial.print("VlcZ:");
+//  Serial.print(VlcZ);
+//  Serial.print("\t");
+
+//  Serial.print("distX:");
+//  Serial.print(distX);
+//  Serial.print("\t");
+//  Serial.print("distY:");
+//  Serial.print(distY);
+//  Serial.print("\t");
+//  Serial.print("distZ:");
+//  Serial.print(distZ);
+
+//  Serial.print("maxGyrX");
+//  Serial.print(maxGyrX);
+//  Serial.print("\t");
+//  Serial.print("maxGyrY");
+//  Serial.print(maxGyrY);
+//  Serial.print("\t");
+//  Serial.print("maxGyrZ");
+//  Serial.print(maxGyrZ);
+//  Serial.print("\t");
+//
+//  Serial.print("maxAccX");
+//  Serial.print(maxAccX);
+//  Serial.print("\t");
+//  Serial.print("maxAccY");
+//  Serial.print(maxAccY);
+//  Serial.print("\t");
+//  Serial.print("maxAccZ");
+//  Serial.print(maxAccZ);
+//  Serial.print("\t");
+
   Serial.println();
+}
+
+double map(double valor, double AtualInf, double AtualSup, double DestInf, double DestSup){
+  double a = (DestSup - DestInf)/(AtualSup - AtualInf);
+  return a*(valor-AtualInf) + DestInf;
 }
