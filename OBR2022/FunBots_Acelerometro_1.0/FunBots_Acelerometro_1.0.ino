@@ -33,7 +33,7 @@ void setup() {
   */
   Wire.beginTransmission(MPU);
   Wire.write(0x1B);
-  Wire.write(0b00010000);  // Trocar esse comando para fundo de escala desejado conforme acima
+  Wire.write(0b00000000);  // Trocar esse comando para fundo de escala desejado conforme acima
   Wire.endTransmission();
 
   // Configura Acelerometro para fundo de escala desejado
@@ -77,7 +77,7 @@ void setup() {
     
     deltat = (micros()-timer)/(double)1000000;
     Serial.println(deltat);
-  }while(deltat < 3);
+  }while(deltat < 5);
 
   AccX_Media/=i;
   AccY_Media/=i;
@@ -136,9 +136,13 @@ void loop() {
   AccY *= g;
   AccZ *= g;
 
-  GyrX = map(GyrX, -32767.0, 32768.0, -1000.0, 1000.0);
-  GyrY = map(GyrY, -32767.0, 32768.0, -1000.0, 1000.0);
-  GyrZ = map(GyrZ, -32767.0, 32768.0, -1000.0, 1000.0);
+  GyrX = map(GyrX, -32767.0, 32768.0, -250.0, 250.0);
+  GyrY = map(GyrY, -32767.0, 32768.0, -250.0, 250.0);
+  GyrZ = map(GyrZ, -32767.0, 32768.0, -250.0, 250.0);
+
+  GyrX = (abs(GyrX) < 0.25)? 0: GyrX;
+  GyrY = (abs(GyrY) < 0.25)? 0: GyrY;
+  GyrZ = (abs(GyrZ) < 0.25)? 0: GyrZ;
 
   deltat = (micros()-timer)/1000000.0;
 
@@ -183,9 +187,9 @@ void loop() {
 //  Serial.print(GyrZ);
 //  Serial.print("\t");
 
-//  Serial.print("AngX:");
-//  Serial.print(AngX);
-//  Serial.print("\t");
+  Serial.print("AngX:");
+  Serial.print(AngX);
+  Serial.print("\t");
 //  Serial.print("AngY:");
 //  Serial.print(AngY);
 //  Serial.print("\t");
