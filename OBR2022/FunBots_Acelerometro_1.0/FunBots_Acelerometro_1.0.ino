@@ -10,13 +10,29 @@ double AccX, AccY, AccZ, Temp, GyrX, GyrY, GyrZ;
 double AccX_Media, AccY_Media, AccZ_Media,  GyrX_Media, GyrY_Media, GyrZ_Media;
 double VlcX, VlcY, VlcZ, AngX, AngY, AngZ, distX, distY, distZ;
 double deltat;
-double maxGyrX, maxGyrY, maxGyrZ, maxAccX, maxAccY, maxAccZ;
+double maxGyrX, maxGyrY, maxGyrZ, maxAccX, maxAccY, maxAccZ; 
 
 unsigned long timer, i;
 
 void setup() {
   Serial.begin(9600);
+  configMPU();
+  setMedia();
+  timer = micros();
+}
 
+void loop() {
+  
+  setMPU();
+  printMPU();
+}
+
+double map(double valor, double AtualInf, double AtualSup, double DestInf, double DestSup){
+  double a = (DestSup - DestInf)/(AtualSup - AtualInf);
+  return a*(valor-AtualInf) + DestInf;
+}
+
+void configMPU(){
   // Inicializa o MPU-6050
   Wire.begin();
   Wire.beginTransmission(MPU);
@@ -47,11 +63,10 @@ void setup() {
   Wire.write(0x1C);
   Wire.write(0b00001000);  // Trocar esse comando para fundo de escala desejado conforme acima
   Wire.endTransmission();
+}
 
-  timer = micros();
-
-  do{
-    // Comandos para iniciar transmissão de dados
+void MPURead(){
+  // Comandos para iniciar transmissão de dados
     Wire.beginTransmission(MPU);
     Wire.write(0x3B);
     Wire.endTransmission(false);
@@ -65,50 +80,33 @@ void setup() {
     GyrX = Wire.read() << 8 | Wire.read(); //0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
     GyrY = Wire.read() << 8 | Wire.read(); //0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
     GyrZ = Wire.read() << 8 | Wire.read(); //0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
+}
 
-    AccX_Media+=AccX;
-    AccY_Media+=AccY;
-    AccZ_Media+=AccZ;
+void setMedia(){
+  timer = micros();
+
+  do{
+
+    MPURead();
+    
     GyrX_Media+=GyrX;
     GyrY_Media+=GyrY;
     GyrZ_Media+=GyrZ;
 
     i++;
     
-    deltat = (micros()-timer)/(double)1000000;
+    deltat = (micros()-timer)/1000000.0;
     Serial.println(deltat);
   }while(deltat < 5);
 
-  AccX_Media/=i;
-  AccY_Media/=i;
-  AccZ_Media/=i;
   GyrX_Media/=i;
   GyrY_Media/=i;
   GyrZ_Media/=i;
-
-  timer = micros();
 }
 
-void loop() {
+void setMPU(){
+  MPURead();
   
-  // Comandos para iniciar transmissão de dados
-  Wire.beginTransmission(MPU);
-  Wire.write(0x3B);
-  Wire.endTransmission(false);
-  Wire.requestFrom(MPU, 14, true); // Solicita os dados ao sensor
-
-  // Armazena o valor dos sensores nas variaveis correspondentes
-  AccX = Wire.read() << 8 | Wire.read(); //0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
-  AccY = Wire.read() << 8 | Wire.read(); //0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-  AccZ = Wire.read() << 8 | Wire.read(); //0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
-  Temp = Wire.read() << 8 | Wire.read(); //0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
-  GyrX = Wire.read() << 8 | Wire.read(); //0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
-  GyrY = Wire.read() << 8 | Wire.read(); //0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
-  GyrZ = Wire.read() << 8 | Wire.read(); //0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
-
-  AccX-=AccX_Media;
-  AccY-=AccY_Media;
-  AccZ-=AccZ_Media;
   GyrX-=GyrX_Media;
   GyrY-=GyrY_Media;
   GyrZ-=GyrZ_Media;
@@ -128,31 +126,15 @@ void loop() {
       +/-2000°/s = 16.4
   */
 
-  AccX = map(AccX, -32767.0, 32768.0, -4.0, 4.0);
-  AccY = map(AccY, -32767.0, 32768.0, -4.0, 4.0);
-  AccZ = map(AccZ, -32767.0, 32768.0, -4.0, 4.0);
-
-  AccX *= g;
-  AccY *= g;
-  AccZ *= g;
-
-  GyrX = map(GyrX, -32767.0, 32768.0, -250.0, 250.0);
-  GyrY = map(GyrY, -32767.0, 32768.0, -250.0, 250.0);
-  GyrZ = map(GyrZ, -32767.0, 32768.0, -250.0, 250.0);
+  GyrX = map(GyrX, -32768.0, 32767.0, -250.0, 250.0);
+  GyrY = map(GyrY, -32768.0, 32767.0, -250.0, 250.0);
+  GyrZ = map(GyrZ, -32768.0, 32767.0, -250.0, 250.0);
 
   GyrX = (abs(GyrX) < 0.25)? 0: GyrX;
   GyrY = (abs(GyrY) < 0.25)? 0: GyrY;
   GyrZ = (abs(GyrZ) < 0.25)? 0: GyrZ;
 
   deltat = (micros()-timer)/1000000.0;
-
-  distX += VlcX*deltat + AccX*pow(deltat, 2)/2;
-  distY += VlcY*deltat + AccX*pow(deltat, 2)/2;
-  distZ += VlcZ*deltat + AccX*pow(deltat, 2)/2;
-
-  VlcX += AccX*deltat;
-  VlcY += AccY*deltat;
-  VlcZ += AccZ*deltat;
 
   AngX += GyrX*deltat;
   AngY += GyrY*deltat;
@@ -161,11 +143,14 @@ void loop() {
   maxGyrX = max(maxGyrX, GyrX);
   maxGyrY = max(maxGyrY, GyrY);
   maxGyrZ = max(maxGyrZ, GyrZ);
-  maxAccX = max(maxAccX, AccX);
-  maxAccY = max(maxAccY, AccY);
-  maxAccZ = max(maxAccZ, AccZ);
 
   timer = micros();
+}
+
+void printMPU(){
+  Serial.print("Deltat:");
+  Serial.print((micros()-timer));
+  Serial.print("\t");
 
 //  Serial.print("AccX:");
 //  Serial.print(AccX);
@@ -177,9 +162,9 @@ void loop() {
 //  Serial.print(AccZ);
 //  Serial.print("\t");
 //
-//  Serial.print("GyrX:");
-//  Serial.print(GyrX);
-//  Serial.print("\t");
+  Serial.print("GyrX:");
+  Serial.print(GyrX);
+  Serial.print("\t");
 //  Serial.print("GyrY:");
 //  Serial.print(GyrY);
 //  Serial.print("\t");
@@ -216,9 +201,9 @@ void loop() {
 //  Serial.print("distZ:");
 //  Serial.print(distZ);
 
-//  Serial.print("maxGyrX");
-//  Serial.print(maxGyrX);
-//  Serial.print("\t");
+  Serial.print("maxGyrX");
+  Serial.print(maxGyrX);
+  Serial.print("\t");
 //  Serial.print("maxGyrY");
 //  Serial.print(maxGyrY);
 //  Serial.print("\t");
@@ -239,7 +224,3 @@ void loop() {
   Serial.println();
 }
 
-double map(double valor, double AtualInf, double AtualSup, double DestInf, double DestSup){
-  double a = (DestSup - DestInf)/(AtualSup - AtualInf);
-  return a*(valor-AtualInf) + DestInf;
-}
