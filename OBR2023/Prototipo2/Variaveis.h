@@ -1,7 +1,3 @@
-#ifndef SENSORCOR_H_INCLUDED
-#define SENSORCOR_H_INCLUDED
-
-
 #define sensForaD !digitalRead(8)
 #define sensForaE !digitalRead(10)
 #define sensDentroD digitalRead(9)
@@ -27,6 +23,7 @@ float AccX, AccY, AccZ, Temp, GyrX, GyrY, GyrZ, UltimoValorGyrZ, DerivadaGyrZ, M
 float ultimosValoresGyrZ[20];
 int i = 0, j = 0;
 bool Subida = false, Descendo = false, Rampa = false, Sala3 = false;
+char caractere;
 
 float distVitima;
 int lado = 1;
@@ -38,5 +35,3 @@ float distparedeD = 0;
 float distparedeE = 0;
 bool entrei = false;
 int comecar = 0;
-
-#endif

@@ -2,6 +2,17 @@
 #include "Objetos.h"
 #include "Triangulo.h"
 
+void printDist(){
+  Serial.print("Distancia cima: ");
+  Serial.println(distC);
+  Serial.print("Distancia baixo: ");
+  Serial.println(distB);
+  // Serial.println("Distancia direita: ");
+  // Serial.println(distD);
+  // Serial.println("Distancia esquerda: ");
+  // Serial.println(distE);
+}
+
 void loopSala3() { 
   atualizarDist();
   printDist();
@@ -13,22 +24,4 @@ void loopSala3() {
     entrei = true;
   }
   acharTriangulo();
-}
-
-void atualizarDist(){
-  distB = distanceSensorDown.measureDistanceCm();
-  distC = distanceSensorUp.measureDistanceCm();
-  distD = distanceSensorRight.measureDistanceCm();
-  distE = distanceSensorLeft.measureDistanceCm();
-}
-
-void printDist(){
-  Serial.print("Distancia cima: ");
-  Serial.println(distC);
-  Serial.print("Distancia baixo: ");
-  Serial.println(distB);
-  // Serial.println("Distancia direita: ");
-  // Serial.println(distD);
-  // Serial.println("Distancia esquerda: ");
-  // Serial.println(distE);
 }

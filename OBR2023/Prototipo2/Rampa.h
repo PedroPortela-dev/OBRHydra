@@ -2,26 +2,6 @@
 #include "Variaveis.h"
 #include "Objetos.h"
 
-void verificacaoMPU(){
-  MPUloop();
-  if(Subida){
-    Serial.print("Subida");
-    // if(distD < 10 && distD > 1 && distE < 10 && distE > 1){
-    //   Rampa = true;
-    // }
-    POWER = 220;
-  }
-  // else if(Descendo && !Rampa){
-  //   POWER = 0;
-  // }
-  // else if(!Subida && Rampa){
-  //   Sala3 = true;
-  // }
-  // else{
-  //   POWER = 70;
-  // }
-}
-
 void MPUsetup() {
   Serial.begin(9600);
 
@@ -95,4 +75,24 @@ void MPUloop() {
     }
   }
   delay(10);
+}
+
+void verificacaoMPU(){
+  MPUloop();
+  if(Subida){
+    Serial.print("Subida");
+    // if(distD < 10 && distD > 1 && distE < 10 && distE > 1){
+    //   Rampa = true;
+    // }
+    POWER = 220;
+  }
+  // else if(Descendo && !Rampa){
+  //   POWER = 0;
+  // }
+  // else if(!Subida && Rampa){
+  //   Sala3 = true;
+  // }
+  // else{
+  //   POWER = 70;
+  // }
 }

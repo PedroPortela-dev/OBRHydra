@@ -18,16 +18,16 @@ void triangulo(){
         Serial.println("frente ate o meio");
       }
       while(distC > 33);
-      esquerda90();
+      drive->esquerda90();
       do{
         atualizarDist();
         vitima();
       }while(!despejei);
     //}else{
-      esquerda90();
+      drive->esquerda90();
       drive->frente(100);
       do{atualizarDist();}while(distC > 33);
-      direita90();
+      drive->direita90();
       drive->tras(128);
       delay(1000);
       do{
@@ -40,16 +40,16 @@ void triangulo(){
     if(lado%2 == 0){
       drive->frente(100);
       do{atualizarDist();}while(distC > 33);
-      direita90();
+      drive->direita90();
       do{
         atualizarDist();
         vitima();
       }while(distC > 5);
     }else{
-      esquerda90();
+      drive->esquerda90();
       drive->frente(100);
       do{atualizarDist();}while(distC > 33);
-      esquerda90();
+      drive->esquerda90();
       drive->tras(128);
       delay(1000);
       do{

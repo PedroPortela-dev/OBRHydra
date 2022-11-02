@@ -1,21 +1,6 @@
 #include "Variaveis.h"
 #include "Objetos.h"
 
-void verificacaoObstaculo(){
-
-  atualizacaoDist();
-  if(distD > 1 && distC > 1){
-    if(distD < 10 && distC < 10){
-      Serial.println("Obstaculo");
-      obstaculo();
-    }
-    else if(distD < 10 && distC > 30){
-      Serial.println("Kit resgate");
-      kitResgate();
-    }
-  }
-}
-
 void atualizacaoDist(){
   distD = distanceSensorRight.measureDistanceCm();
   distC = distanceSensorUp.measureDistanceCm();
@@ -48,15 +33,6 @@ void obstaculo()
   while(sensDentroE== BRANCO){}
 }
 
-void kitResgate(){
-  //baixar garra
-  capturarVitima();
-  drive->tras(POWER); //Frente
-  delay(DELAY1);
-
-
-}
-
 void capturarVitima(){
   // braço->tras(50);
   delay(500);
@@ -72,4 +48,28 @@ void capturarVitima(){
   coleta->tras(255);
   delay(100);
   coleta->parar();
+}
+
+void kitResgate(){
+  //baixar garra
+  capturarVitima();
+  drive->tras(POWER); //Frente
+  delay(DELAY1);
+
+
+}
+
+void verificacaoObstaculo(){
+
+  atualizacaoDist();
+  if(distD > 1 && distC > 1){
+    if(distD < 10 && distC < 10){
+      Serial.println("Obstaculo");
+      obstaculo();
+    }
+    else if(distD < 10 && distC > 30){
+      Serial.println("Kit resgate");
+      kitResgate();
+    }
+  }
 }

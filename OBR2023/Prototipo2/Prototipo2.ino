@@ -1,32 +1,28 @@
-// Inclusão das Bibliotecas
-
 #include "Variaveis.h"
 #include "Objetos.h"
-#include "SeguidorLinha.h"
-#include "Obstaculo.h"
-#include "Rampa.h"
+#include "Sala1.h"
 #include "Sala3.h"
-#include "IdVitima.h"
 
 void setup() {
+  Serial.begin(9600);
   // m_despejo.attach(9);
   MPUsetup();
+  Serial.availableForWrite();
 }
 
 void loop() {
-  if(!Sala3){
+  caractere = Serial.read();
+  switch (caractere)
+  {
+  case 'a':
+    sala1();
+    break;
+  
+  case 'b':
     loopSala3();
-  }else{
-    // verificacaoSeguidor();
-    // verificacaoObstaculo();
-    verificacaoMPU();
+    break;
+  default:
+    break;
   }
-}
-
-void testeIdentificacao(){
-//      esquerda90();
-      do{
-        atualizarDist();
-        vitima();
-      }while(!despejei);
+  
 }

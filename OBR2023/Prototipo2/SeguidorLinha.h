@@ -1,6 +1,3 @@
-#ifndef SEGUIDORLINHA_H_INCLUDED
-#define SEGUIDORLINHA_H_INCLUDED
-
 #include "Variaveis.h"
 #include "Objetos.h"
 
@@ -13,30 +10,15 @@ void setupLinha(){
 
 void verificacaoSeguidor(){ 
   if (sensDentroE==BRANCO && sensDentroD==PRETO){
-    Direita();
+    drive->direita(POWER1);
   }
   else if (sensDentroE==PRETO && sensDentroD==BRANCO){
-    Esquerda();  
+    drive->esquerda(POWER1); 
   }
   else if (sensDentroE==BRANCO && sensDentroD==BRANCO){
-    Frente();
+    drive->frente(POWER);
   }
   else if (sensDentroE==PRETO && sensDentroD==PRETO){
-    Frente();
+    drive->frente(POWER);
   }
 }
-
-void Direita(){
-  drive->direita(POWER1);
-}
-
-void Esquerda(){
-  drive->esquerda(POWER1);
-}
-
-void Frente(){
-  drive->frente(POWER);
-}
-
-
-#endif

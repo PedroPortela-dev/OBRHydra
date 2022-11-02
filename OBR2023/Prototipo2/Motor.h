@@ -1,6 +1,3 @@
-#ifndef MOTOR_H_INCLUDED
-#define MOTOR_H_INCLUDED
-
 class Motor{
   public:
     Motor(int v, int p1, int p2, bool forward, int pExtra = 0){
@@ -66,5 +63,3 @@ class Motor{
     int p1,p2,pv, pExtra;
     bool forward;
 };
-
-#endif

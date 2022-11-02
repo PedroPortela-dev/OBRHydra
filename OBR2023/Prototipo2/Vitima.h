@@ -2,6 +2,13 @@
 #include "Objetos.h"
 #include "Despejo.h"
 
+void atualizarDist(){
+  distB = distanceSensorDown.measureDistanceCm();
+  distC = distanceSensorUp.measureDistanceCm();
+  distD = distanceSensorRight.measureDistanceCm();
+  distE = distanceSensorLeft.measureDistanceCm();
+}
+
 void vitima(){
   if(distD >36 && distD <60){
     distparedeD = distD;
@@ -17,7 +24,7 @@ void vitima(){
     Serial.println(distE);
     drive->freiar();
     delay(5000);
-    direita90();
+    drive->direita90();
     distVitima = distC;
     drive->tras(1);
     delay(1000);
@@ -29,7 +36,7 @@ void vitima(){
   // coleta->freiar();
     drive->tras(100);
     do{atualizarDist();}while(distC < distVitima);
-    esquerda90();
+    drive->esquerda90();
   }
   else if(distparedeE - distE > 4){
     Serial.print("Distancia direita: ");
@@ -39,7 +46,7 @@ void vitima(){
     Serial.println("Achei vitima na esquerda");
     drive->freiar();
     delay(5000);
-    esquerda90();
+    drive->esquerda90();
     distVitima = distC;
     drive->tras(100);
     delay(1000);
@@ -51,7 +58,7 @@ void vitima(){
   // coleta->freiar();
     drive->tras(100);
     do{atualizarDist();}while(distC < distVitima);
-    direita90();
+    drive->direita90();
   }
   else{
     atualizarDist();
@@ -82,11 +89,4 @@ void vitima(){
   Serial.print("Sensor direita: ");
   Serial.println(distD);
   
-}
-
-void atualizarDist(){
-  distB = distanceSensorDown.measureDistanceCm();
-  distC = distanceSensorUp.measureDistanceCm();
-  distD = distanceSensorRight.measureDistanceCm();
-  distE = distanceSensorLeft.measureDistanceCm();
 }
