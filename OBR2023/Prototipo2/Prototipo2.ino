@@ -20,9 +20,7 @@ void loop() {
   
   case 'b':
     loopSala3();
-    break;
   default:
-    break;
   }
   
 }

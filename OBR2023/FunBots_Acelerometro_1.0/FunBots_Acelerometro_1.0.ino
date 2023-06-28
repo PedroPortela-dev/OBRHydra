@@ -1,6 +1,5 @@
 // Inclusão das Bibliotecas
 #include<Wire.h>
-#include<math.h>
 
 #define g 9.80665;
 
@@ -162,25 +161,25 @@ void printMPU(){
 //  Serial.print(AccZ);
 //  Serial.print("\t");
 //
-  Serial.print("GyrX:");
-  Serial.print(GyrX);
-  Serial.print("\t");
+//  Serial.print("GyrX:");
+//  Serial.print(GyrX);
+//  Serial.print("\t");
 //  Serial.print("GyrY:");
 //  Serial.print(GyrY);
 //  Serial.print("\t");
-//  Serial.print("GyrZ:");
-//  Serial.print(GyrZ);
-//  Serial.print("\t");
-
-  Serial.print("AngX:");
-  Serial.print(AngX);
+  Serial.print("GyrZ:");
+  Serial.print(GyrZ);
   Serial.print("\t");
+
+//  Serial.print("AngX:");
+//  Serial.print(AngX);
+//  Serial.print("\t");
 //  Serial.print("AngY:");
 //  Serial.print(AngY);
 //  Serial.print("\t");
-//  Serial.print("AngZ:");
-//  Serial.print(AngZ);
-//  Serial.print("\t");
+  Serial.print("AngZ:");
+  Serial.print(AngZ);
+  Serial.print("\t");
 //
 //  Serial.print("VlcX:");
 //  Serial.print(VlcX);
@@ -201,15 +200,15 @@ void printMPU(){
 //  Serial.print("distZ:");
 //  Serial.print(distZ);
 
-  Serial.print("maxGyrX");
-  Serial.print(maxGyrX);
-  Serial.print("\t");
+//  Serial.print("maxGyrX");
+//  Serial.print(maxGyrX);
+//  Serial.print("\t");
 //  Serial.print("maxGyrY");
 //  Serial.print(maxGyrY);
 //  Serial.print("\t");
-//  Serial.print("maxGyrZ");
-//  Serial.print(maxGyrZ);
-//  Serial.print("\t");
+  Serial.print("maxGyrZ");
+  Serial.print(maxGyrZ);
+  Serial.print("\t");
 //
 //  Serial.print("maxAccX");
 //  Serial.print(maxAccX);
@@ -223,4 +222,3 @@ void printMPU(){
 
   Serial.println();
 }
-
